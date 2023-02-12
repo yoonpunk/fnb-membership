@@ -26,3 +26,8 @@ logging:
 #          descriptor:
 #            sql:
 #              BasicBinder: TRACE
+
+# swagger-ui custom path
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
