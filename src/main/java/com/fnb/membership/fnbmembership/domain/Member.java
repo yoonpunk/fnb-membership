@@ -1,5 +1,6 @@
 package com.fnb.membership.fnbmembership.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -8,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -34,4 +36,35 @@ public class Member {
 
     private LocalDateTime createdAt;
 
+    protected Member() {
+
+    }
+
+    private Member(String phone) {
+        this.phone = phone;
+        this.barcode = this.createBarcode();
+    }
+
+    /**
+     * 신규 Member 객체 생성 시 사용하는 메서드
+     * 12자리 숫자형 문자열 Barcode를 임의로 생성해 Set
+     * @param phone
+     */
+    public static Member createMember(String phone) {
+        return new Member(phone);
+    }
+
+    private String createBarcode() {
+
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i=0; i<10; i++) {
+            sb.append(Integer.toString(random.nextInt(10)));
+        }
+
+        return sb.toString();
+    }
 }

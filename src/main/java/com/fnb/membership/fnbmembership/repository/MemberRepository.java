@@ -4,6 +4,7 @@ import com.fnb.membership.fnbmembership.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -11,4 +12,8 @@ import java.util.UUID;
  */
 @Repository
 public interface MemberRepository extends JpaRepository<Member, UUID> {
+
+    public Optional<Member> findByPhone(String phone);
+
+    public Optional<Member> findByBarcode(String barcode);
 }
