@@ -27,7 +27,8 @@ public class Store {
     @JoinColumn(name = "BRAND_ID")
     private Brand brand;
 
-    @Column(name = "STORE_NAME")
+    @Column(name = "STORE_NAME", unique = true)
     private String name;
+
     private LocalDateTime createdAt;
 }

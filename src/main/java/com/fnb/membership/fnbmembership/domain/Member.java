@@ -25,8 +25,13 @@ public class Member {
     @GenericGenerator(name="uuid2", strategy = "uuid2")
     @Column(name = "MEMBER_ID", columnDefinition = "BINARY(16)")
     private UUID id;
+
+    @Column(unique = true)
     private String phone;
+
+    @Column(unique = true)
     private String barcode;
+
     private LocalDateTime createdAt;
 
 }

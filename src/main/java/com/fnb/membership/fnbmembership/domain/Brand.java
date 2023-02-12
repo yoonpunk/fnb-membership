@@ -26,8 +26,9 @@ public class Brand {
     @Column(name = "BRAND_ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "BRAND_NAME")
+    @Column(name = "BRAND_NAME", unique = true)
     private String name;
+
     private LocalDateTime createAt;
 
 }
