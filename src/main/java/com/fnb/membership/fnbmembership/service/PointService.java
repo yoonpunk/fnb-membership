@@ -147,6 +147,12 @@ public class PointService {
             pointRepository.saveAndFlush(validPoint);
 
             log.info("use point completed. usePointDto=" + usePointDto.toString());
+            return PointResultDto.builder()
+                    .memberId(validPoint.getMember().getId().toString())
+                    .brandId(validPoint.getBrand().getId().toString())
+                    .requestedAmount(usePointDto.getAmount())
+                    .remainedAmount(validPoint.getAmount())
+                    .build();
 
         } catch(OptimisticLockException ole) {
             log.error("A request was made to use the points elsewhere. please try again.");

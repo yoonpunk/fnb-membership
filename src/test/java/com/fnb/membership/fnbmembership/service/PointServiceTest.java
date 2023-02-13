@@ -128,7 +128,7 @@ class PointServiceTest {
         assertThat(pointResultDto.getMemberId()).isEqualTo(usePointDto.getMemberId());
         assertThat(pointResultDto.getBrandId()).isEqualTo(usePointDto.getBrandId());
         assertThat(pointResultDto.getRequestedAmount()).isEqualTo(usePointDto.getAmount());
-        assertThat(pointResultDto.getRemainedAmount()).isEqualTo(10000);
+        assertThat(pointResultDto.getRemainedAmount()).isEqualTo(3000l);
     }
 
     @Test
