@@ -31,4 +31,16 @@ public class Brand {
 
     private LocalDateTime createAt;
 
+    protected Brand() {
+
+    }
+
+    private Brand(String name) {
+        this.name = name;
+    }
+
+    public static Brand createBrand(String name) {
+        return new Brand(name);
+    }
+
 }
