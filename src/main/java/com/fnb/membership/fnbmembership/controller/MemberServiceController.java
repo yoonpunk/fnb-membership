@@ -26,11 +26,14 @@ public class MemberServiceController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "fnb member join", description = "fnb membership 회원가입 API 입니다.")
+    @Operation(summary = "fnb member join",
+            description = "fnb membership 회원가입 API 입니다. " +
+                    "신규 회원일 경우, 회원 정보를 생성하고 그 결과를 돌려줍니다. " +
+                    "가입된 회원일 경우, 기존 회원 정보를 돌려줍니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
     })
-    @PostMapping("/join")
+    @PostMapping("/member")
     public ResponseEntity<Join.Response> join(@Valid @RequestBody Join.Request request) {
         log.info("member join requested. request=" + request.toString());
 
