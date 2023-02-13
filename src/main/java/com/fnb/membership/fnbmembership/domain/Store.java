@@ -31,4 +31,18 @@ public class Store {
     private String name;
 
     private LocalDateTime createdAt;
+
+    protected Store() {
+
+    }
+
+    private Store(String name, Brand brand) {
+        this.name = name;
+        this.brand = brand;
+    }
+
+    public static Store createStore(String name, Brand brand) {
+
+        return new Store(name, brand);
+    }
 }
