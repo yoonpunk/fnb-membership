@@ -6,6 +6,7 @@ import com.fnb.membership.fnbmembership.domain.Member;
 import com.fnb.membership.fnbmembership.dto.CheckedMemberDto;
 import com.fnb.membership.fnbmembership.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -33,11 +35,16 @@ public class MemberService {
     @Transactional(readOnly = false)
     public CheckedMemberDto join(String phone) throws MemberJoinFailedException {
 
+        log.info("join requested. phone=" + phone);
+
         Optional<Member> member = memberRepository.findByPhone(phone);
 
         // 기존 회원이 있을 경우, 조회 된 회원 정보를 리턴
         if (member.isPresent()) {
             Member existMember = member.get();
+
+            log.info("member already exists. phone=" + phone);
+
             return CheckedMemberDto.builder()
                     .id(existMember.getId().toString())
                     .phone(existMember.getPhone())
@@ -50,6 +57,7 @@ public class MemberService {
             Member newMember = Member.createMember(phone);
             newMember = memberRepository.save(newMember);
 
+            log.info("creating new member is completed. phone=" + newMember.getPhone());
             return CheckedMemberDto.builder()
                     .id(newMember.getId().toString())
                     .phone(newMember.getPhone())
@@ -57,6 +65,7 @@ public class MemberService {
                     .build();
 
         } catch (Exception e) {
+            log.error("unexpected error occurs. joining a member is failed. phone=" + phone);
             throw new MemberJoinFailedException(e.getMessage(), e.getCause());
         }
     }
@@ -71,18 +80,24 @@ public class MemberService {
      */
     public CheckedMemberDto checkMemberByPhone(String phone) throws NoSuchMemberException {
 
+        log.info("checkMemberByPhone is requested. phone=" + phone);
+
         // 회원 조회
         Optional<Member> member = memberRepository.findByPhone(phone);
 
         // 회원 존재 시, 회원 정보 리턴
         if (member.isPresent()) {
             Member existMember = member.get();
+
+            log.info("member is valid. phone=" + phone);
+
             return CheckedMemberDto.builder()
                             .id(existMember.getId().toString())
                             .phone(existMember.getPhone())
                             .barcode(existMember.getBarcode())
                             .build();
         } else { // 없을 경우, 예외 발생
+            log.error("member is invalid. phone=" + phone);
             throw new NoSuchMemberException();
         }
     };
@@ -97,18 +112,23 @@ public class MemberService {
      */
     public CheckedMemberDto checkMemberByBarcode(String barcode) throws NoSuchMemberException {
 
+        log.info("checkMemberByBarcode is requested. barcode=" + barcode);
+
         // 회원 조회
         Optional<Member> member = memberRepository.findByBarcode(barcode);
 
         // 회원 존재 시, 회원 정보 리턴
         if (member.isPresent()) {
             Member existMember = member.get();
+
+            log.info("member is valid. barcode=" + barcode);
             return CheckedMemberDto.builder()
                             .id(existMember.getId().toString())
                             .phone(existMember.getPhone())
                             .barcode(existMember.getBarcode())
                             .build();
         } else { // 없을 경우, 예외 발생
+            log.error("member is invalid. barcode=" + barcode);
             throw new NoSuchMemberException();
         }
     };
