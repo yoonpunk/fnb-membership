@@ -31,5 +31,9 @@ public class PointOrder {
     @JoinColumn(name = "STORE_ID")
     private Store store;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "POINT_ID")
+    private Point point;
+
     private LocalDateTime approvedAt;
 }
