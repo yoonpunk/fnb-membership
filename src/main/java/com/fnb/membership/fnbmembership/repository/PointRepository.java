@@ -2,9 +2,11 @@ package com.fnb.membership.fnbmembership.repository;
 
 import com.fnb.membership.fnbmembership.domain.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +17,7 @@ import java.util.UUID;
 @Repository
 public interface PointRepository extends JpaRepository<Point, UUID> {
 
-//    @Lock(LockModeType.OPTIMISTIC)
+    @Lock(LockModeType.OPTIMISTIC)
     @Query(
             "SELECT p " +
             "FROM Point p " +
