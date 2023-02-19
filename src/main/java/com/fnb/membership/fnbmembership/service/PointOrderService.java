@@ -41,7 +41,7 @@ public class PointOrderService {
      * @throws NoSuchStoreException
      */
     public CreatePointOrderResultDto createEarnPointOrder (
-            CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, PointResultDto pointResult)
+            CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, EarnPointResultDto pointResult)
             throws NoSuchMemberException, NoSuchStoreException {
 
         log.info("createEarnPointOrder requested. " +
@@ -97,13 +97,13 @@ public class PointOrderService {
      * PointOrder PointOrderType.USE 생성을 위한 메서드
      * @param checkedMember 검증된 회원 정보
      * @param checkedStore 검증된 점포 정보
-     * @param pointResult 포인트 사용 요청 결과 정보
+     * @param usePointResultDto 포인트 사용 요청 결과 정보
      * @return CreatePointOrderResultDto 생성된 PointOrder의 정보가 담긴 DTO
      * @throws NoSuchMemberException
      * @throws NoSuchStoreException
      */
     public CreatePointOrderResultDto createUsePointOrder (
-            CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, PointResultDto pointResult)
+            CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, UsePointResultDto usePointResultDto)
             throws NoSuchMemberException, NoSuchStoreException {
 
         log.info("createUsePointOrder requested. " +
@@ -111,7 +111,7 @@ public class PointOrderService {
                 " storeId=" + checkedStore.getStoreId() +
                 " brandId=" + checkedStore.getBrandId() +
                 " type=" + PointOrderType.USE +
-                " requestedPointAmount=" + pointResult.getRequestedAmount());
+                " requestedPointAmount=" + usePointResultDto.getRequestedAmount());
 
         // Member 객체 조회
         Optional<Member> searchedMember = memberRepository.findById(UUID.fromString(checkedMember.getId()));
@@ -130,16 +130,16 @@ public class PointOrderService {
         }
 
         // Point 객체 조회
-        Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(pointResult.getPointId()));
+        Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(usePointResultDto.getPointId()));
 
         if (searchedPoint.isEmpty()) {
-            log.error("point is invaild. pointId=" + pointResult.getPointId());
+            log.error("point is invaild. pointId=" + usePointResultDto.getPointId());
             throw new NoSuchPointExcpetion();
         }
 
         // PointOrder 생성
         PointOrder pointOrder = PointOrder.createPointOrder(
-                searchedMember.get(), PointOrderType.USE, searchedStore.get(), searchedPoint.get(), pointResult.getRequestedAmount());
+                searchedMember.get(), PointOrderType.USE, searchedStore.get(), searchedPoint.get(), usePointResultDto.getRequestedAmount());
 
         pointOrder = pointOrderRepository.save(pointOrder);
         log.info("createUsePointOrder completed. pointOrderId=" + pointOrder.getId().toString());

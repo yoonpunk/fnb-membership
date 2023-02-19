@@ -1,10 +1,7 @@
 package com.fnb.membership.fnbmembership.service;
 
 import com.fnb.membership.fnbmembership.domain.*;
-import com.fnb.membership.fnbmembership.dto.CheckedMemberDto;
-import com.fnb.membership.fnbmembership.dto.CheckedStoreDto;
-import com.fnb.membership.fnbmembership.dto.CreatePointOrderResultDto;
-import com.fnb.membership.fnbmembership.dto.PointResultDto;
+import com.fnb.membership.fnbmembership.dto.*;
 import com.fnb.membership.fnbmembership.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,7 +75,7 @@ class PointOrderServiceTest {
                 .storeId(moonbucks.getId().toString())
                 .build();
 
-        PointResultDto pointResultDto = PointResultDto.builder()
+        EarnPointResultDto earnPointResultDto = EarnPointResultDto.builder()
                 .pointId(point.getId().toString())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(3000l)
@@ -89,7 +86,7 @@ class PointOrderServiceTest {
 
         // when
         CreatePointOrderResultDto createPointOrderResultDto = pointOrderService.createEarnPointOrder(
-                checkedMemberDto, checkedStoreDto, pointResultDto);
+                checkedMemberDto, checkedStoreDto, earnPointResultDto);
 
         // then
         Optional<PointOrder> result = pointOrderRepository.findById(UUID.fromString(createPointOrderResultDto.getPointOrderId()));
@@ -122,7 +119,7 @@ class PointOrderServiceTest {
                 .storeId(moonbucks.getId().toString())
                 .build();
 
-        PointResultDto pointResultDto = PointResultDto.builder()
+        UsePointResultDto usePointResultDto = UsePointResultDto.builder()
                 .pointId(point.getId().toString())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(2000l)
@@ -133,7 +130,7 @@ class PointOrderServiceTest {
 
         // when
         CreatePointOrderResultDto createPointOrderResultDto = pointOrderService.createUsePointOrder(
-                checkedMemberDto, checkedStoreDto, pointResultDto);
+                checkedMemberDto, checkedStoreDto, usePointResultDto);
 
         // then
         Optional<PointOrder> result = pointOrderRepository.findById(UUID.fromString(createPointOrderResultDto.getPointOrderId()));

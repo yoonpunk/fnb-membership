@@ -4,13 +4,13 @@ import com.fnb.membership.fnbmembership.domain.Brand;
 import com.fnb.membership.fnbmembership.domain.Member;
 import com.fnb.membership.fnbmembership.domain.Point;
 import com.fnb.membership.fnbmembership.dto.EarnPointDto;
-import com.fnb.membership.fnbmembership.dto.PointResultDto;
+import com.fnb.membership.fnbmembership.dto.EarnPointResultDto;
 import com.fnb.membership.fnbmembership.dto.UsePointDto;
+import com.fnb.membership.fnbmembership.dto.UsePointResultDto;
 import com.fnb.membership.fnbmembership.exception.NotEnoughPointException;
 import com.fnb.membership.fnbmembership.repository.BrandRepository;
 import com.fnb.membership.fnbmembership.repository.MemberRepository;
 import com.fnb.membership.fnbmembership.repository.PointRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +22,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -58,7 +58,6 @@ class PointServiceTest {
         pointRepository.save(point);
     }
 
-
     @Test
     void earnPoint_적립_최초_1회_성공() {
 
@@ -74,13 +73,21 @@ class PointServiceTest {
                 .build();
 
         // when
-        PointResultDto pointResultDto = pointService.earnPoint(earnPointDto);
+        EarnPointResultDto earnPointResultDto = pointService.earnPoint(earnPointDto);
 
         // then
-        assertThat(pointResultDto.getMemberId()).isEqualTo(earnPointDto.getMemberId());
-        assertThat(pointResultDto.getBrandId()).isEqualTo(earnPointDto.getBrandId());
-        assertThat(pointResultDto.getRequestedAmount()).isEqualTo(earnPointDto.getAmount());
-        assertThat(pointResultDto.getRemainedAmount()).isEqualTo(5000l);
+        Optional<Point> result = pointRepository.findById(UUID.fromString((earnPointResultDto.getPointId())));
+        assertThat(result).isPresent();
+        assertThat(result.get().getId().toString()).isEqualTo(earnPointResultDto.getPointId());
+        assertThat(result.get().getMember().getId()).isEqualTo(existMember.getId());
+        assertThat(result.get().getBrand().getId()).isEqualTo(newBrand.getId());
+        assertThat(result.get().getAmount()).isEqualTo(5000l);
+
+        assertThat(earnPointResultDto.getMemberId()).isEqualTo(earnPointDto.getMemberId());
+        assertThat(earnPointResultDto.getBrandId()).isEqualTo(earnPointDto.getBrandId());
+        assertThat(earnPointResultDto.getRequestedAmount()).isEqualTo(earnPointDto.getAmount());
+        assertThat(earnPointResultDto.getRemainedAmount()).isEqualTo(5000l);
+        assertThat(earnPointResultDto.isSuccess()).isTrue();
     }
 
     @Test
@@ -98,13 +105,21 @@ class PointServiceTest {
                 .build();
 
         // when
-        PointResultDto pointResultDto = pointService.earnPoint(earnPointDto);
+        EarnPointResultDto earnPointResultDto = pointService.earnPoint(earnPointDto);
 
         // then
-        assertThat(pointResultDto.getMemberId()).isEqualTo(earnPointDto.getMemberId());
-        assertThat(pointResultDto.getBrandId()).isEqualTo(earnPointDto.getBrandId());
-        assertThat(pointResultDto.getRequestedAmount()).isEqualTo(earnPointDto.getAmount());
-        assertThat(pointResultDto.getRemainedAmount()).isEqualTo(10000);
+        Optional<Point> result = pointRepository.findById(UUID.fromString((earnPointResultDto.getPointId())));
+        assertThat(result).isPresent();
+        assertThat(result.get().getId().toString()).isEqualTo(earnPointResultDto.getPointId());
+        assertThat(result.get().getMember().getId()).isEqualTo(existMember.getId());
+        assertThat(result.get().getBrand().getId()).isEqualTo(existBrand.getId());
+        assertThat(result.get().getAmount()).isEqualTo(10000l);
+
+        assertThat(earnPointResultDto.getMemberId()).isEqualTo(earnPointDto.getMemberId());
+        assertThat(earnPointResultDto.getBrandId()).isEqualTo(earnPointDto.getBrandId());
+        assertThat(earnPointResultDto.getRequestedAmount()).isEqualTo(earnPointDto.getAmount());
+        assertThat(earnPointResultDto.getRemainedAmount()).isEqualTo(10000);
+        assertThat(earnPointResultDto.isSuccess()).isTrue();
     }
 
     @Test
@@ -122,13 +137,21 @@ class PointServiceTest {
                 .build();
 
         // when
-        PointResultDto pointResultDto = pointService.usePoint(usePointDto);
+        UsePointResultDto usePointResultDto = pointService.usePoint(usePointDto);
 
         // then
-        assertThat(pointResultDto.getMemberId()).isEqualTo(usePointDto.getMemberId());
-        assertThat(pointResultDto.getBrandId()).isEqualTo(usePointDto.getBrandId());
-        assertThat(pointResultDto.getRequestedAmount()).isEqualTo(usePointDto.getAmount());
-        assertThat(pointResultDto.getRemainedAmount()).isEqualTo(3000l);
+        Optional<Point> result = pointRepository.findById(UUID.fromString((usePointResultDto.getPointId())));
+        assertThat(result).isPresent();
+        assertThat(result.get().getId().toString()).isEqualTo(usePointResultDto.getPointId());
+        assertThat(result.get().getMember().getId()).isEqualTo(existMember.getId());
+        assertThat(result.get().getBrand().getId()).isEqualTo(existBrand.getId());
+        assertThat(result.get().getAmount()).isEqualTo(3000l);
+
+        assertThat(usePointResultDto.getMemberId()).isEqualTo(usePointDto.getMemberId());
+        assertThat(usePointResultDto.getBrandId()).isEqualTo(usePointDto.getBrandId());
+        assertThat(usePointResultDto.getRequestedAmount()).isEqualTo(usePointDto.getAmount());
+        assertThat(usePointResultDto.getRemainedAmount()).isEqualTo(3000l);
+        assertThat(usePointResultDto.isSuccess()).isTrue();
     }
 
     @Test

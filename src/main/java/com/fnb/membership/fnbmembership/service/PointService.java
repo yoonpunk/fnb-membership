@@ -4,8 +4,9 @@ import com.fnb.membership.fnbmembership.domain.Brand;
 import com.fnb.membership.fnbmembership.domain.Member;
 import com.fnb.membership.fnbmembership.domain.Point;
 import com.fnb.membership.fnbmembership.dto.EarnPointDto;
-import com.fnb.membership.fnbmembership.dto.PointResultDto;
+import com.fnb.membership.fnbmembership.dto.EarnPointResultDto;
 import com.fnb.membership.fnbmembership.dto.UsePointDto;
+import com.fnb.membership.fnbmembership.dto.UsePointResultDto;
 import com.fnb.membership.fnbmembership.exception.NoSuchBrandException;
 import com.fnb.membership.fnbmembership.exception.NoSuchMemberException;
 import com.fnb.membership.fnbmembership.exception.NotEnoughPointException;
@@ -45,7 +46,7 @@ public class PointService {
      * @param earnPointDto
      * @return
      */
-    public PointResultDto earnPoint(EarnPointDto earnPointDto) {
+    public EarnPointResultDto earnPoint(EarnPointDto earnPointDto) {
 
         log.info("earnPoint requested. earnPointDto=" + earnPointDto.toString());
 
@@ -78,10 +79,11 @@ public class PointService {
                 resultPoint = Point.createPoint(member.get(), brand.get(), earnPointDto.getAmount());
                 resultPoint = pointRepository.save(resultPoint);
 
-                PointResultDto result = PointResultDto.builder()
+                EarnPointResultDto result = EarnPointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
                         .brandId(earnPointDto.getBrandId())
                         .pointId(resultPoint.getId().toString())
+                        .isSuccess(true)
                         .requestedAmount(earnPointDto.getAmount())
                         .remainedAmount(resultPoint.getAmount())
                         .build();
@@ -94,10 +96,11 @@ public class PointService {
                 validPoint.earnPoint(earnPointDto.getAmount());
                 pointRepository.saveAndFlush(validPoint);
 
-                PointResultDto result = PointResultDto.builder()
+                EarnPointResultDto result = EarnPointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
                         .brandId(earnPointDto.getBrandId())
                         .pointId(validPoint.getId().toString())
+                        .isSuccess(true)
                         .requestedAmount(earnPointDto.getAmount())
                         .remainedAmount(validPoint.getAmount())
                         .build();
@@ -108,9 +111,18 @@ public class PointService {
             }
         } catch(OptimisticLockException ole) {
             log.error("A request was made to earn the points elsewhere. please try again.");
-        }
 
-        return null;
+            EarnPointResultDto result = EarnPointResultDto.builder()
+                    .memberId(earnPointDto.getMemberId())
+                    .brandId(earnPointDto.getBrandId())
+                    .pointId(null)
+                    .isSuccess(false)
+                    .requestedAmount(earnPointDto.getAmount())
+                    .remainedAmount(0l)
+                    .build();
+
+            return result;
+        }
     }
 
     /**
@@ -120,7 +132,7 @@ public class PointService {
      * @param usePointDto
      * @return
      */
-    public PointResultDto usePoint(UsePointDto usePointDto) throws NotEnoughPointException {
+    public UsePointResultDto usePoint(UsePointDto usePointDto) throws NotEnoughPointException {
 
         log.info("usePoint requested. usePointDto=" + usePointDto.toString());
 
@@ -148,17 +160,28 @@ public class PointService {
             pointRepository.saveAndFlush(validPoint);
 
             log.info("use point completed. usePointDto=" + usePointDto.toString());
-            return PointResultDto.builder()
+            return UsePointResultDto.builder()
                     .memberId(validPoint.getMember().getId().toString())
                     .brandId(validPoint.getBrand().getId().toString())
+                    .pointId(validPoint.getId().toString())
+                    .isSuccess(true)
                     .requestedAmount(usePointDto.getAmount())
                     .remainedAmount(validPoint.getAmount())
                     .build();
 
         } catch(OptimisticLockException ole) {
             log.error("A request was made to use the points elsewhere. please try again.");
-        }
 
-        return null;
+            UsePointResultDto result = UsePointResultDto.builder()
+                    .memberId(usePointDto.getMemberId())
+                    .brandId(usePointDto.getBrandId())
+                    .pointId(null)
+                    .isSuccess(false)
+                    .requestedAmount(usePointDto.getAmount())
+                    .remainedAmount(0l)
+                    .build();
+
+            return result;
+        }
     }
 }
