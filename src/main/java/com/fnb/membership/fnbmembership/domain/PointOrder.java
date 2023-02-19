@@ -35,5 +35,23 @@ public class PointOrder {
     @JoinColumn(name = "POINT_ID")
     private Point point;
 
+    private Long requestedPointAmount;
+
     private LocalDateTime approvedAt;
+
+    protected PointOrder() {
+
+    }
+
+    private PointOrder(Member member, PointOrderType type, Store store, Point point, Long requestedPointAmount) {
+        this.member = member;
+        this.type = type;
+        this.store = store;
+        this.point = point;
+        this.requestedPointAmount = requestedPointAmount;
+    }
+
+    public static PointOrder createPointOrder(Member member, PointOrderType pointOrderType, Store store, Point point, Long requestedPointAmount) {
+        return new PointOrder(member, pointOrderType, store, point, requestedPointAmount);
+    }
 }
