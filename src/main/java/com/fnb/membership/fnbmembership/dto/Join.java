@@ -11,6 +11,7 @@ import javax.validation.constraints.Pattern;
 
 /**
  * 회원 가입 시 사용하는 Request/Response 객체
+ * MemberServiceController에서 사용
  */
 public class Join {
 
