@@ -12,6 +12,7 @@ public class PointResultDto {
 
     private String brandId;
     private String memberId;
+    private String pointId;
     private Long requestedAmount;
     private Long remainedAmount;
 }

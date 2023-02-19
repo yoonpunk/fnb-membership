@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.OptimisticLockException;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -77,11 +76,12 @@ public class PointService {
                 }
 
                 resultPoint = Point.createPoint(member.get(), brand.get(), earnPointDto.getAmount());
-                pointRepository.save(resultPoint);
+                resultPoint = pointRepository.save(resultPoint);
 
                 PointResultDto result = PointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
                         .brandId(earnPointDto.getBrandId())
+                        .pointId(resultPoint.getId().toString())
                         .requestedAmount(earnPointDto.getAmount())
                         .remainedAmount(resultPoint.getAmount())
                         .build();
@@ -97,6 +97,7 @@ public class PointService {
                 PointResultDto result = PointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
                         .brandId(earnPointDto.getBrandId())
+                        .pointId(validPoint.getId().toString())
                         .requestedAmount(earnPointDto.getAmount())
                         .remainedAmount(validPoint.getAmount())
                         .build();
