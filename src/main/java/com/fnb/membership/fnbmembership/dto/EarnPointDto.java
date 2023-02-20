@@ -7,7 +7,6 @@ import lombok.Data;
 @Builder
 public class EarnPointDto {
 
-    private String storeId;
     private String brandId;
     private String memberId;
     private Long amount;

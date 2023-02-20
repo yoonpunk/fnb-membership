@@ -35,21 +35,22 @@ public class PointOrderService {
      * PointOrder PointOrderType.EARN 생성을 위한 메서드
      * @param checkedMember 검증된 회원 정보
      * @param checkedStore 검증된 점포 정보
-     * @param pointResult 포인트 적립 요청 결과 정보
+     * @param earnPointResultDto 포인트 적립 요청 결과 정보
      * @return CreatePointOrderResultDto 생성된 PointOrder의 정보가 담긴 DTO
      * @throws NoSuchMemberException
      * @throws NoSuchStoreException
      */
     public CreatePointOrderResultDto createEarnPointOrder (
-            CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, EarnPointResultDto pointResult)
-            throws NoSuchMemberException, NoSuchStoreException {
+            CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, EarnPointResultDto earnPointResultDto)
+            throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException {
 
         log.info("createEarnPointOrder requested. " +
                 " memberId=" + checkedMember.getId() +
                 " storeId=" + checkedStore.getStoreId() +
                 " brandId=" + checkedStore.getBrandId() +
                 " type=" + PointOrderType.EARN +
-                " requestedPointAmount=" + pointResult.getRequestedAmount());
+                " isSuccess=" + earnPointResultDto.isSuccess() +
+                " requestedPointAmount=" + earnPointResultDto.getRequestedAmount());
 
         // Member 객체 조회
         Optional<Member> searchedMember = memberRepository.findById(UUID.fromString(checkedMember.getId()));
@@ -67,16 +68,21 @@ public class PointOrderService {
             throw new NoSuchStoreException();
         }
         // Point 객체 조회
-        Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(pointResult.getPointId()));
+        Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(earnPointResultDto.getPointId()));
 
         if (searchedPoint.isEmpty()) {
-            log.error("point is invaild. pointId=" + pointResult.getPointId());
+            log.error("point is invaild. pointId=" + earnPointResultDto.getPointId());
             throw new NoSuchPointExcpetion();
         }
 
         // PointOrder 생성
+        // earnPointResultDto의 성공여부 체크, 실패 시 예외처리
+        if (!earnPointResultDto.isSuccess()) {
+            throw new IllegalArgumentException("Failed Point result.");
+        }
+
         PointOrder pointOrder = PointOrder.createPointOrder(
-                searchedMember.get(), PointOrderType.EARN, searchedStore.get(), searchedPoint.get(), pointResult.getRequestedAmount());
+                searchedMember.get(), PointOrderType.EARN, searchedStore.get(), searchedPoint.get(), earnPointResultDto.getRequestedAmount());
 
         pointOrder = pointOrderRepository.save(pointOrder);
         log.info("createEarnPointOrder completed. pointOrderId=" + pointOrder.getId().toString());
@@ -104,13 +110,14 @@ public class PointOrderService {
      */
     public CreatePointOrderResultDto createUsePointOrder (
             CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, UsePointResultDto usePointResultDto)
-            throws NoSuchMemberException, NoSuchStoreException {
+            throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException {
 
         log.info("createUsePointOrder requested. " +
                 " memberId=" + checkedMember.getId() +
                 " storeId=" + checkedStore.getStoreId() +
                 " brandId=" + checkedStore.getBrandId() +
                 " type=" + PointOrderType.USE +
+                " isSuccess=" + usePointResultDto.isSuccess() +
                 " requestedPointAmount=" + usePointResultDto.getRequestedAmount());
 
         // Member 객체 조회
@@ -138,6 +145,11 @@ public class PointOrderService {
         }
 
         // PointOrder 생성
+        // usePointResultDto 성공여부 체크, 실패 시 예외처리
+        if (!usePointResultDto.isSuccess()) {
+            throw new IllegalArgumentException("Failed Point result.");
+        }
+
         PointOrder pointOrder = PointOrder.createPointOrder(
                 searchedMember.get(), PointOrderType.USE, searchedStore.get(), searchedPoint.get(), usePointResultDto.getRequestedAmount());
 

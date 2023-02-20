@@ -82,6 +82,7 @@ class PointOrderServiceTest {
                 .brandId(bakery.getId().toString())
                 .memberId(member.getId().toString())
                 .pointId(point.getId().toString())
+                .isSuccess(true)
                 .build();
 
         // when
@@ -126,6 +127,7 @@ class PointOrderServiceTest {
                 .brandId(bakery.getId().toString())
                 .memberId(member.getId().toString())
                 .pointId(point.getId().toString())
+                .isSuccess(true)
                 .build();
 
         // when
