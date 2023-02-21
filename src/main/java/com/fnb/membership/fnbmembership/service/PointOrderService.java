@@ -39,6 +39,7 @@ public class PointOrderService {
      * @return CreatePointOrderResultDto 생성된 PointOrder의 정보가 담긴 DTO
      * @throws NoSuchMemberException
      * @throws NoSuchStoreException
+     * @throws IllegalArgumentException
      */
     public CreatePointOrderResultDto createEarnPointOrder (
             CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, EarnPointResultDto earnPointResultDto)
@@ -107,6 +108,7 @@ public class PointOrderService {
      * @return CreatePointOrderResultDto 생성된 PointOrder의 정보가 담긴 DTO
      * @throws NoSuchMemberException
      * @throws NoSuchStoreException
+     * @throws IllegalArgumentException
      */
     public CreatePointOrderResultDto createUsePointOrder (
             CheckedMemberDto checkedMember, CheckedStoreDto checkedStore, UsePointResultDto usePointResultDto)

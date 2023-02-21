@@ -1,8 +1,10 @@
 package com.fnb.membership.fnbmembership.service;
 
 import com.fnb.membership.fnbmembership.dto.*;
+import com.fnb.membership.fnbmembership.exception.NoSuchBrandException;
 import com.fnb.membership.fnbmembership.exception.NoSuchMemberException;
 import com.fnb.membership.fnbmembership.exception.NoSuchStoreException;
+import com.fnb.membership.fnbmembership.exception.NotEnoughPointException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,7 +70,8 @@ public class RequestPointOrderService {
         return result;
     }
 
-    public RequestEarnPointOrderResultDto createEarnPointOrderByPhone(String phone, Long pointAmount, String storeId) {
+    public RequestEarnPointOrderResultDto createEarnPointOrderByPhone(String phone, Long pointAmount, String storeId)
+            throws NoSuchMemberException, NoSuchStoreException, NoSuchBrandException, OptimisticLockException {
 
         log.info("createEarnPointOrderByPhone requested. " +
                 "phone=" + phone + " pointAmount=" + pointAmount + "storeId=" + storeId);
@@ -112,7 +115,8 @@ public class RequestPointOrderService {
     }
 
     public RequestUsePointOrderResultDto createUsePointOrderByBarcode(String barcode, Long pointAmount, String storeId)
-            throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException {
+            throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException, NotEnoughPointException,
+            OptimisticLockException {
 
         log.info("createUsePointOrderByBarcode requested. " +
                 "barcde=" + barcode + " pointAmount=" + pointAmount + "storeId=" + storeId);
@@ -156,7 +160,8 @@ public class RequestPointOrderService {
     }
 
     public RequestUsePointOrderResultDto createUsePointOrderByPhone(String phone, Long pointAmount, String storeId)
-            throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException {
+            throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException, NotEnoughPointException,
+            OptimisticLockException {
 
         log.info("createUsePointOrderByPhone requested. " +
                 "barcde=" + phone + " pointAmount=" + pointAmount + "storeId=" + storeId);
