@@ -19,6 +19,7 @@ public class Join {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @Schema(name = "JoinRequest")
     public static class Request {
         @NotBlank(message = "휴대전화번호를 반드시 숫자만 입력해주세요.")
         @Pattern(regexp = "01(0|1|6|7|8|9)([0-9]{3,4})([0-9]{4})",
@@ -32,6 +33,7 @@ public class Join {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @Schema(name = "JoinResponse")
     public static class Response {
         private String phone;
         private String barcode;

@@ -12,6 +12,7 @@ public class EarnPointOrderByBarcode {
 
     @Data
     @Builder
+    @Schema(name = "EarnPointOrderByBarcodeRequest")
     public static class Request {
         private String barcode;
         private String storeId;
@@ -20,6 +21,7 @@ public class EarnPointOrderByBarcode {
 
     @Data
     @Builder
+    @Schema(name = "EarnPointOrderByPhoneReply")
     public static class Response {
         String result;
     }

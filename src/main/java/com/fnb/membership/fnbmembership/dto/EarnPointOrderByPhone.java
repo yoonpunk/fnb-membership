@@ -12,6 +12,7 @@ public class EarnPointOrderByPhone {
 
     @Data
     @Builder
+    @Schema(name = "EarnPointOrderByPhoneRequest")
     public static class Request {
         private String phone;
         private String storeId;
@@ -20,6 +21,7 @@ public class EarnPointOrderByPhone {
 
     @Data
     @Builder
+    @Schema(name = "EarnPointOrderByPhoneResponse")
     public static class Response {
         String result;
     }
