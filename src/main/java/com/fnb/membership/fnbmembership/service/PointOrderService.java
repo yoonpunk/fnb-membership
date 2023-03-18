@@ -62,7 +62,7 @@ public class PointOrderService {
         }
 
         // Store 객체 조회
-        Optional<Store> searchedStore = storeRepository.findById(UUID.fromString(checkedStore.getStoreId()));
+        Optional<Store> searchedStore = storeRepository.findByIdWithBrand(UUID.fromString(checkedStore.getStoreId()));
 
         if (searchedStore.isEmpty()) {
             log.error("store is invalid. storeId=" + checkedStore.getStoreId());
@@ -83,7 +83,12 @@ public class PointOrderService {
         }
 
         PointOrder pointOrder = PointOrder.createPointOrder(
-                searchedMember.get(), PointOrderType.EARN, searchedStore.get(), searchedPoint.get(), earnPointResultDto.getRequestedAmount());
+                searchedMember.get(),
+                searchedStore.get().getBrand().getId(),
+                searchedStore.get().getId(),
+                PointOrderType.EARN,
+                earnPointResultDto.getRequestedAmount()
+        );
 
         pointOrder = pointOrderRepository.save(pointOrder);
         log.info("createEarnPointOrder completed. pointOrderId=" + pointOrder.getId().toString());
@@ -153,7 +158,12 @@ public class PointOrderService {
         }
 
         PointOrder pointOrder = PointOrder.createPointOrder(
-                searchedMember.get(), PointOrderType.USE, searchedStore.get(), searchedPoint.get(), usePointResultDto.getRequestedAmount());
+                searchedMember.get(),
+                searchedStore.get().getBrand().getId(),
+                searchedStore.get().getId(),
+                PointOrderType.USE,
+                usePointResultDto.getRequestedAmount()
+        );
 
         pointOrder = pointOrderRepository.save(pointOrder);
         log.info("createUsePointOrder completed. pointOrderId=" + pointOrder.getId().toString());

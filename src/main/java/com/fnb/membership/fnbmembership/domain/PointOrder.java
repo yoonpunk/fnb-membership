@@ -24,16 +24,14 @@ public class PointOrder {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID brandId;
+
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID storeId;
+
     @Enumerated(EnumType.STRING)
     private PointOrderType type;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STORE_ID")
-    private Store store;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "POINT_ID")
-    private Point point;
 
     private Long requestedPointAmount;
 
@@ -43,15 +41,15 @@ public class PointOrder {
 
     }
 
-    private PointOrder(Member member, PointOrderType type, Store store, Point point, Long requestedPointAmount) {
+    private PointOrder(Member member, UUID brandId, UUID storeId, PointOrderType type, Long requestedPointAmount) {
         this.member = member;
+        this.brandId = brandId;
+        this.storeId = storeId;
         this.type = type;
-        this.store = store;
-        this.point = point;
         this.requestedPointAmount = requestedPointAmount;
     }
 
-    public static PointOrder createPointOrder(Member member, PointOrderType pointOrderType, Store store, Point point, Long requestedPointAmount) {
-        return new PointOrder(member, pointOrderType, store, point, requestedPointAmount);
+    public static PointOrder createPointOrder(Member member, UUID brandId, UUID storeId, PointOrderType pointOrderType, Long requestedPointAmount) {
+        return new PointOrder(member, brandId, storeId, pointOrderType, requestedPointAmount);
     }
 }

@@ -35,7 +35,7 @@ class PointOrderServiceTest {
     private BrandRepository brandRepository;
 
     private Member member;
-    private Brand bakery;
+    private Brand cafe;
     private Store moonbucks;
     private Point point;
 
@@ -47,13 +47,13 @@ class PointOrderServiceTest {
         member = Member.createMember("01012345678");
         memberRepository.save(member);
 
-        bakery = Brand.createBrand("BAKERY");
-        brandRepository.save(bakery);
+        cafe = Brand.createBrand("CAFE");
+        brandRepository.save(cafe);
 
-        moonbucks = Store.createStore("MOONBUCKS", bakery);
+        moonbucks = Store.createStore("MOONBUCKS", cafe);
         storeRepository.save(moonbucks);
 
-        point = Point.createPoint(member, bakery, 5000);
+        point = Point.createPoint(member, cafe, 5000);
         pointRepository.save(point);
 
     }
@@ -69,8 +69,8 @@ class PointOrderServiceTest {
                 .build();
 
         CheckedStoreDto checkedStoreDto = CheckedStoreDto.builder()
-                .brandName(bakery.getName())
-                .brandId(bakery.getId().toString())
+                .brandName(cafe.getName())
+                .brandId(cafe.getId().toString())
                 .storeName(moonbucks.getName())
                 .storeId(moonbucks.getId().toString())
                 .build();
@@ -79,7 +79,7 @@ class PointOrderServiceTest {
                 .pointId(point.getId().toString())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(3000l)
-                .brandId(bakery.getId().toString())
+                .brandId(cafe.getId().toString())
                 .memberId(member.getId().toString())
                 .pointId(point.getId().toString())
                 .isSuccess(true)
@@ -94,8 +94,8 @@ class PointOrderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().getMember().getId()).isEqualTo(member.getId());
-        assertThat(result.get().getStore().getId()).isEqualTo(moonbucks.getId());
-        assertThat(result.get().getPoint().getId()).isEqualTo(point.getId());
+        assertThat(result.get().getBrandId()).isEqualTo(cafe.getId());
+        assertThat(result.get().getStoreId()).isEqualTo(moonbucks.getId());
         assertThat(result.get().getRequestedPointAmount()).isEqualTo(3000l);
         assertThat(result.get().getType()).isEqualTo(PointOrderType.EARN);
 
@@ -114,8 +114,8 @@ class PointOrderServiceTest {
                 .build();
 
         CheckedStoreDto checkedStoreDto = CheckedStoreDto.builder()
-                .brandName(bakery.getName())
-                .brandId(bakery.getId().toString())
+                .brandName(cafe.getName())
+                .brandId(cafe.getId().toString())
                 .storeName(moonbucks.getName())
                 .storeId(moonbucks.getId().toString())
                 .build();
@@ -124,7 +124,7 @@ class PointOrderServiceTest {
                 .pointId(point.getId().toString())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(2000l)
-                .brandId(bakery.getId().toString())
+                .brandId(cafe.getId().toString())
                 .memberId(member.getId().toString())
                 .pointId(point.getId().toString())
                 .isSuccess(true)
@@ -139,8 +139,8 @@ class PointOrderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().getMember().getId()).isEqualTo(member.getId());
-        assertThat(result.get().getStore().getId()).isEqualTo(moonbucks.getId());
-        assertThat(result.get().getPoint().getId()).isEqualTo(point.getId());
+        assertThat(result.get().getBrandId()).isEqualTo(cafe.getId());
+        assertThat(result.get().getStoreId()).isEqualTo(moonbucks.getId());
         assertThat(result.get().getRequestedPointAmount()).isEqualTo(2000l);
         assertThat(result.get().getType()).isEqualTo(PointOrderType.USE);
 
