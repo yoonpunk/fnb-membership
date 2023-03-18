@@ -64,7 +64,7 @@ public class PointService {
                 Optional<Member> member = memberRepository.findById(UUID.fromString(earnPointDto.getMemberId()));
 
                 if (member.isEmpty()) {
-                    log.error("invalid memberId requested. memnberId=" + earnPointDto.getMemberId());
+                    log.error("invalid memberId requested. memberId=" + earnPointDto.getMemberId());
                     throw new NoSuchMemberException();
                 }
 
@@ -94,7 +94,7 @@ public class PointService {
             } else { // 적립된 포인트가 있을 경우, 포인트 적립
                 Point validPoint = point.get();
                 validPoint.earnPoint(earnPointDto.getAmount());
-                pointRepository.saveAndFlush(validPoint);
+                pointRepository.save(validPoint);
 
                 EarnPointResultDto result = EarnPointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
@@ -157,7 +157,7 @@ public class PointService {
 
             // 포인트 사용
             validPoint.usePoint(usePointDto.getAmount());
-            pointRepository.saveAndFlush(validPoint);
+            pointRepository.save(validPoint);
 
             log.info("use point completed. usePointDto=" + usePointDto.toString());
             return UsePointResultDto.builder()
