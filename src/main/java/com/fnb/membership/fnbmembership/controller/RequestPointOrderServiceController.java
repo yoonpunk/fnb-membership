@@ -1,8 +1,6 @@
 package com.fnb.membership.fnbmembership.controller;
 
-import com.fnb.membership.fnbmembership.dto.EarnPointOrderByBarcode;
-import com.fnb.membership.fnbmembership.dto.EarnPointOrderByPhone;
-import com.fnb.membership.fnbmembership.dto.RequestEarnPointOrderResultDto;
+import com.fnb.membership.fnbmembership.dto.*;
 import com.fnb.membership.fnbmembership.exception.NoSuchBrandException;
 import com.fnb.membership.fnbmembership.exception.NoSuchMemberException;
 import com.fnb.membership.fnbmembership.exception.NoSuchStoreException;
@@ -36,7 +34,7 @@ public class RequestPointOrderServiceController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
     })
-    @PostMapping("pointorder/byphone")
+    @PostMapping("pointorder/earn/byphone")
     public ResponseEntity<EarnPointOrderByPhone.Response> earnPointOrderByPhone(@RequestBody EarnPointOrderByPhone.Request request) {
 
         log.info("earnPointOrderByPhone requested. request="+ request.toString());
@@ -93,7 +91,7 @@ public class RequestPointOrderServiceController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
     })
-    @PostMapping("pointorder/bybarcode")
+    @PostMapping("pointorder/earn/bybarcode")
     public ResponseEntity<EarnPointOrderByBarcode.Response> earnPointOrderByBarcode(@RequestBody EarnPointOrderByBarcode.Request request) {
 
         log.info("earnPointOrderByBarcode requested. request="+ request.toString());
@@ -138,6 +136,120 @@ public class RequestPointOrderServiceController {
         } catch (Exception e) {
             log.error("Unknown Exception occurs request=" + request.toString());
             EarnPointOrderByBarcode.Response response = EarnPointOrderByBarcode.Response.builder()
+                    .result("Unknown Exception occurs request.").build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Operation(summary = "fnb membership pointorder earning",
+            description = "fnb membership 포인트 적립 API 입니다. " +
+                    "기존 회원의 휴대폰 번호를 통해 포인트를 사용합니다. " +
+                    "같은 브랜드의 점포에서는 포인트를 통합하여 사용할 수 있습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+    })
+    @PostMapping("pointorder/use/byphone")
+    public ResponseEntity<UsePointOrderByPhone.Response> usePointOrderByPhone(@RequestBody UsePointOrderByPhone.Request request) {
+
+        log.info("usePointOrderByPhone requested. request="+ request.toString());
+
+        try {
+            RequestUsePointOrderResultDto resultDto = requestPointOrderService.createUsePointOrderByPhone(
+                    request.getPhone(), request.getPointAmount(), request.getStoreId());
+
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("success").build();
+
+            log.info("usePointOrderByPhone completed. response="+ response.toString());
+
+            // 결과 리턴
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (NoSuchMemberException nme) {
+            log.error("NoSuchMemberException occurs request=" + request.toString());
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("No Such Member Information").build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (NoSuchStoreException nsse) {
+            log.error("NoSuchStoreException occurs request=" + request.toString());
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("No Such Store Information").build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (NoSuchBrandException nsbe) {
+            log.error("NoSuchBrandException occurs request=" + request.toString());
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("Invalid Brand Information").build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (IllegalArgumentException iae) {
+            log.error("IllegalArgumentException occurs request=" + request.toString());
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("Illegal Argument requested.").build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (OptimisticLockException ole) {
+            log.error("OptimisticLockException occurs request=" + request.toString());
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("Concurrent point access occurred.").build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (Exception e) {
+            log.error("Unknown Exception occurs request=" + request.toString());
+            UsePointOrderByPhone.Response response = UsePointOrderByPhone.Response.builder()
+                    .result("Unknown Exception occurs request.").build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Operation(summary = "fnb membership pointorder earning",
+            description = "fnb membership 포인트 적립 API 입니다. " +
+                    "기존 회원의 바코드를 통해 포인트를 사용합니다. " +
+                    "같은 브랜드의 점포에서는 포인트를 통합하여 사용할 수 있습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+    })
+    @PostMapping("pointorder/use/bybarcode")
+    public ResponseEntity<UsePointOrderByBarcode.Response> usePointOrderByBarcode(@RequestBody UsePointOrderByBarcode.Request request) {
+
+        log.info("usePointOrderByBarcode requested. request="+ request.toString());
+
+        try {
+            RequestUsePointOrderResultDto resultDto = requestPointOrderService.createUsePointOrderByBarcode(
+                    request.getBarcode(), request.getPointAmount(), request.getStoreId());
+
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
+                    .result("success").build();
+
+            log.info("usePointOrderByBarcode completed. response="+ response.toString());
+
+            // 결과 리턴
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (NoSuchMemberException nme) {
+            log.error("NoSuchMemberException occurs request=" + request.toString());
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
+                    .result("No Such Member Information").build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (NoSuchStoreException nsse) {
+            log.error("NoSuchStoreException occurs request=" + request.toString());
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
+                    .result("No Such Store Information").build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (NoSuchBrandException nsbe) {
+            log.error("NoSuchBrandException occurs request=" + request.toString());
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
+                    .result("Invalid Brand Information").build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (IllegalArgumentException iae) {
+            log.error("IllegalArgumentException occurs request=" + request.toString());
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
+                    .result("Illegal Argument requested.").build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (OptimisticLockException ole) {
+            log.error("OptimisticLockException occurs request=" + request.toString());
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
+                    .result("Concurrent point access occurred.").build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (Exception e) {
+            log.error("Unknown Exception occurs request=" + request.toString());
+            UsePointOrderByBarcode.Response response = UsePointOrderByBarcode.Response.builder()
                     .result("Unknown Exception occurs request.").build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
