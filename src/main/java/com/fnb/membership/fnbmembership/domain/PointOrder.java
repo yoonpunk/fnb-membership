@@ -24,11 +24,9 @@ public class PointOrder {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID brandId;
+    private String brandName;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID storeId;
+    private String storeName;
 
     @Enumerated(EnumType.STRING)
     private PointOrderType type;
@@ -38,18 +36,19 @@ public class PointOrder {
     private LocalDateTime approvedAt;
 
     protected PointOrder() {
-
+        this.approvedAt = LocalDateTime.now();
     }
 
-    private PointOrder(Member member, UUID brandId, UUID storeId, PointOrderType type, Long requestedPointAmount) {
+    private PointOrder(Member member, String brandName, String storeName, PointOrderType type, Long requestedPointAmount) {
         this.member = member;
-        this.brandId = brandId;
-        this.storeId = storeId;
+        this.brandName = brandName;
+        this.storeName = storeName;
         this.type = type;
         this.requestedPointAmount = requestedPointAmount;
+        this.approvedAt = LocalDateTime.now();
     }
 
-    public static PointOrder createPointOrder(Member member, UUID brandId, UUID storeId, PointOrderType pointOrderType, Long requestedPointAmount) {
-        return new PointOrder(member, brandId, storeId, pointOrderType, requestedPointAmount);
+    public static PointOrder createPointOrder(Member member, String brandName, String storeName, PointOrderType pointOrderType, Long requestedPointAmount) {
+        return new PointOrder(member, brandName, storeName, pointOrderType, requestedPointAmount);
     }
 }

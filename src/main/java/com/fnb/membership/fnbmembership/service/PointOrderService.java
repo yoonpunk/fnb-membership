@@ -11,6 +11,7 @@ import com.fnb.membership.fnbmembership.repository.PointRepository;
 import com.fnb.membership.fnbmembership.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,8 +85,8 @@ public class PointOrderService {
 
         PointOrder pointOrder = PointOrder.createPointOrder(
                 searchedMember.get(),
-                searchedStore.get().getBrand().getId(),
-                searchedStore.get().getId(),
+                searchedStore.get().getBrand().getName(),
+                searchedStore.get().getName(),
                 PointOrderType.EARN,
                 earnPointResultDto.getRequestedAmount()
         );
@@ -159,8 +160,8 @@ public class PointOrderService {
 
         PointOrder pointOrder = PointOrder.createPointOrder(
                 searchedMember.get(),
-                searchedStore.get().getBrand().getId(),
-                searchedStore.get().getId(),
+                searchedStore.get().getBrand().getName(),
+                searchedStore.get().getName(),
                 PointOrderType.USE,
                 usePointResultDto.getRequestedAmount()
         );
@@ -178,5 +179,37 @@ public class PointOrderService {
         log.info("createUsePointOrder completed. CreateUseOrderResultDto=" + createPointOrderResultDto.toString());
 
         return createPointOrderResultDto;
+    }
+
+    /**
+     * A method for searching pointOrder histories.
+     * @param searchPointOrder A DTO object containing search conditions.
+     * @return A List of searched pointOrder histories.
+     */
+    public Slice<SearchedPointOrderDto> searchPointOrder(SearchPointOrderDto searchPointOrder) {
+
+        log.info("searchPointOrder requested. " +
+                " memberId=" + searchPointOrder.getMemberId() +
+                " startTime=" + searchPointOrder.getStartTime() +
+                " endTime=" + searchPointOrder.getStartTime());
+
+        Slice<PointOrder> sliceByMemberId = pointOrderRepository.findSliceByMemberIdAndTime(
+                UUID.fromString(searchPointOrder.getMemberId()),
+                searchPointOrder.getStartTime(),
+                searchPointOrder.getEndTime(),
+                searchPointOrder.getPageable()
+        );
+
+        Slice<SearchedPointOrderDto> searchedPointOrderDtos = sliceByMemberId.map(
+                pointOrder -> SearchedPointOrderDto.builder()
+                        .approvedAt(pointOrder.getApprovedAt())
+                        .requestedAmount(pointOrder.getRequestedPointAmount())
+                        .brandName(pointOrder.getBrandName())
+                        .storeName(pointOrder.getStoreName())
+                        .pointOrderType(pointOrder.getType())
+                        .build()
+        );
+
+        return searchedPointOrderDtos;
     }
 }
