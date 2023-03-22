@@ -12,8 +12,8 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
+#        show_sql: true
+#        format_sql: true
     defer-datasource-initialization: true
   sql:
     init:
@@ -26,10 +26,10 @@ logging:
     org:
       hibernate:
         SQL: DEBUG
-#        type:
-#          descriptor:
-#            sql:
-#              BasicBinder: TRACE
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
 
 # swagger-ui custom path
 springdoc:

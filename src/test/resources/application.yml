@@ -12,20 +12,14 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-#    defer-datasource-initialization: true
-#  sql:
-#    init:
-#      mode: always
-#      data-locations: data.sql
+        show_sql: false
 
 # logging
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
 #        type:
 #          descriptor:
 #            sql:
