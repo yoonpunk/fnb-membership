@@ -33,12 +33,13 @@ public class Store {
     private LocalDateTime createdAt;
 
     protected Store() {
-
+        this.createdAt = LocalDateTime.now();
     }
 
     private Store(String name, Brand brand) {
         this.name = name;
         this.brand = brand;
+        this.createdAt = LocalDateTime.now();
     }
 
     public static Store createStore(String name, Brand brand) {

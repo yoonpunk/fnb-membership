@@ -1,6 +1,5 @@
 package com.fnb.membership.fnbmembership.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -37,12 +36,13 @@ public class Member {
     private LocalDateTime createdAt;
 
     protected Member() {
-
+        this.createdAt = LocalDateTime.now();
     }
 
     private Member(String phone) {
         this.phone = phone;
         this.barcode = this.createBarcode();
+        this.createdAt = LocalDateTime.now();
     }
 
     /**

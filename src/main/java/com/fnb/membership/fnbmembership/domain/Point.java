@@ -1,7 +1,6 @@
 package com.fnb.membership.fnbmembership.domain;
 
 import lombok.Getter;
-import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -31,19 +30,20 @@ public class Point {
 
     private Long amount;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Version
     private Long version;
 
     protected Point() {
-
+        this.createdAt = LocalDateTime.now();
     }
 
     public Point(Member member, Brand brand, Long amount) {
         this.member = member;
         this.brand = brand;
         this.amount = amount;
+        this.createdAt = LocalDateTime.now();
     }
 
     /**

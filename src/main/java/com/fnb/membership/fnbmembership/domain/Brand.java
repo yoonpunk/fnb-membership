@@ -29,14 +29,16 @@ public class Brand {
     @Column(name = "BRAND_NAME", unique = true)
     private String name;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     protected Brand() {
-
+        this.createdAt = LocalDateTime.now();
     }
 
     private Brand(String name) {
+
         this.name = name;
+        this.createdAt = LocalDateTime.now();
     }
 
     public static Brand createBrand(String name) {
