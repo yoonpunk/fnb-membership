@@ -27,10 +27,10 @@ public class Member {
     @Column(name = "MEMBER_ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 11)
     private String phone;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 12)
     private String barcode;
 
     private LocalDateTime createdAt;
