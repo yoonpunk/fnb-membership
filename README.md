@@ -1,5 +1,12 @@
-## F&B 회원 서비스 🍜 🍰 ☕️ 
+# F&B 회원 서비스 🍜 🍰 ☕️ 
 
+## 프로젝트 소개
+
+F&B 회원 관리 서비스입니다.  
+Springboot 기반의 애플리케이션을 직접 구현하며, 개발에 필요한 내용을 공부하고 마주한 문제를 고민하고 해결한 내용을 기록합니다.  
+기능이 추가되거나 개선된 내용은 꾸준히 업데이트 됩니다.
+
+## 구현 기능
 ### 1. 서비스 설명
 * F&B 회원의 적립 포인트를 관리하기 위한 서비스
 * F&B 회원은 사용자의 휴대폰 전화번호 별로 하나의 바코드를 발급
@@ -43,3 +50,13 @@
 ### 3. 추가 고려사항
 1. 여러 서버에서 여러 인스턴스를 통해 동작할 수 있어야 함
 2. 회원 정보(전화번호 or 바코드)는 공유가 가능하기 때문에 동시다발적으로 적립 및 사용 요청이 발생할 수 있음
+
+## 설계 및 구조
+### ERD
+[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership)
+![erd](https://user-images.githubusercontent.com/16172668/227227711-5e282739-8243-4608-87f6-47e391a2dda6.png)
+
+
+### 클래스 다이어그램
+[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership/issues/1)
+![classdiagram](https://user-images.githubusercontent.com/16172668/227721897-cbbb305d-db1e-41f2-8da0-aa377394f1e4.png)
