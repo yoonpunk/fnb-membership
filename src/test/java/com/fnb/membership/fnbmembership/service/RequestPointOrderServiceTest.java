@@ -7,7 +7,6 @@ import com.fnb.membership.fnbmembership.domain.Store;
 import com.fnb.membership.fnbmembership.dto.RequestEarnPointOrderResultDto;
 import com.fnb.membership.fnbmembership.dto.RequestUsePointOrderResultDto;
 import com.fnb.membership.fnbmembership.repository.*;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,11 +49,11 @@ class RequestPointOrderServiceTest {
 
     private Member existMember;
 
-    private Brand bakery;
-    private Brand food;
+    private Brand seoulBaguette;
+    private Brand burgerQueen;
 
-    private Store moonbucks;
-    private Store pizzaland;
+    private Store seoulBaguetteSinsa;
+    private Store burgerQueenPangyo;
 
     @BeforeEach
     private void init() {
@@ -68,19 +67,19 @@ class RequestPointOrderServiceTest {
         existMember = Member.createMember("01012345678");
         memberRepository.save(existMember);
 
-        bakery = Brand.createBrand("BAKERY");
-        brandRepository.save(bakery);
+        seoulBaguette = Brand.createBrand("SEOULBAGUETTE");
+        brandRepository.save(seoulBaguette);
 
-        moonbucks = Store.createStore("MOONBUCKS", bakery);
-        storeRepository.save(moonbucks);
+        seoulBaguetteSinsa = Store.createStore("SEOULBAGUETTE 신사점", seoulBaguette);
+        storeRepository.save(seoulBaguetteSinsa);
 
-        food = Brand.createBrand("FOOD");
-        brandRepository.save(food);
+        burgerQueen = Brand.createBrand("BURGERQUEEN");
+        brandRepository.save(burgerQueen);
 
-        pizzaland = Store.createStore("PIZZALAND", food);
-        storeRepository.save(pizzaland);
+        burgerQueenPangyo = Store.createStore("BURGERQUEEN 판교점", burgerQueen);
+        storeRepository.save(burgerQueenPangyo);
 
-        Point point = Point.createPoint(existMember, food, 15000l);
+        Point point = Point.createPoint(existMember, burgerQueen, 15000l);
         pointRepository.save(point);
 
     }
@@ -93,15 +92,15 @@ class RequestPointOrderServiceTest {
 
         // when
         // 2번 적립, 최초 포인트 적립, 기존 포인트에 누적으로 적립
-        requestPointOrderService.createEarnPointOrderByBarcode(barcode, 5000l, moonbucks.getId().toString());
+        requestPointOrderService.createEarnPointOrderByBarcode(barcode, 5000l, seoulBaguetteSinsa.getId().toString());
         RequestEarnPointOrderResultDto result = requestPointOrderService.createEarnPointOrderByBarcode(
-                barcode, 5000l, moonbucks.getId().toString());
+                barcode, 5000l, seoulBaguetteSinsa.getId().toString());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(bakery.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(moonbucks.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(seoulBaguette.getId().toString());
+        assertThat(result.getStoreId()).isEqualTo(seoulBaguetteSinsa.getId().toString());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }
@@ -114,15 +113,15 @@ class RequestPointOrderServiceTest {
 
         // when
         // 2번 적립, 최초 포인트 적립, 기존 포인트에 누적으로 적립
-        requestPointOrderService.createEarnPointOrderByPhone(phone, 5000l, moonbucks.getId().toString());
+        requestPointOrderService.createEarnPointOrderByPhone(phone, 5000l, seoulBaguetteSinsa.getId().toString());
         RequestEarnPointOrderResultDto result = requestPointOrderService.createEarnPointOrderByPhone(
-                phone, 5000l, moonbucks.getId().toString());
+                phone, 5000l, seoulBaguetteSinsa.getId().toString());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(bakery.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(moonbucks.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(seoulBaguette.getId().toString());
+        assertThat(result.getStoreId()).isEqualTo(seoulBaguetteSinsa.getId().toString());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }
@@ -134,13 +133,13 @@ class RequestPointOrderServiceTest {
 
         // when
         RequestUsePointOrderResultDto result = requestPointOrderService.createUsePointOrderByBarcode(
-                barcode, 5000l, pizzaland.getId().toString());
+                barcode, 5000l, burgerQueenPangyo.getId().toString());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(food.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(pizzaland.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(burgerQueen.getId().toString());
+        assertThat(result.getStoreId()).isEqualTo(burgerQueenPangyo.getId().toString());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }
@@ -152,13 +151,13 @@ class RequestPointOrderServiceTest {
 
         // when
         RequestUsePointOrderResultDto result = requestPointOrderService.createUsePointOrderByPhone(
-                phone, 5000l, pizzaland.getId().toString());
+                phone, 5000l, burgerQueenPangyo.getId().toString());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(food.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(pizzaland.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(burgerQueen.getId().toString());
+        assertThat(result.getStoreId()).isEqualTo(burgerQueenPangyo.getId().toString());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }

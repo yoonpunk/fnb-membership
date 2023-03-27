@@ -39,8 +39,8 @@ class PointOrderServiceTest {
     private BrandRepository brandRepository;
 
     private Member member;
-    private Brand cafe;
-    private Store moonbucks;
+    private Brand moonbucks;
+    private Store moonbucksMetan;
     private Point point;
 
     @BeforeEach
@@ -51,13 +51,13 @@ class PointOrderServiceTest {
         member = Member.createMember("01012345678");
         memberRepository.save(member);
 
-        cafe = Brand.createBrand("CAFE");
-        brandRepository.save(cafe);
+        moonbucks = Brand.createBrand("MOONBUCKS");
+        brandRepository.save(moonbucks);
 
-        moonbucks = Store.createStore("MOONBUCKS", cafe);
-        storeRepository.save(moonbucks);
+        moonbucksMetan = Store.createStore("MOONBUCKS 매탄점", moonbucks);
+        storeRepository.save(moonbucksMetan);
 
-        point = Point.createPoint(member, cafe, 5000);
+        point = Point.createPoint(member, moonbucks, 5000);
         pointRepository.save(point);
 
     }
@@ -73,17 +73,17 @@ class PointOrderServiceTest {
                 .build();
 
         CheckedStoreDto checkedStoreDto = CheckedStoreDto.builder()
-                .brandName(cafe.getName())
-                .brandId(cafe.getId().toString())
-                .storeName(moonbucks.getName())
-                .storeId(moonbucks.getId().toString())
+                .brandName(moonbucks.getName())
+                .brandId(moonbucks.getId().toString())
+                .storeName(moonbucksMetan.getName())
+                .storeId(moonbucksMetan.getId().toString())
                 .build();
 
         EarnPointResultDto earnPointResultDto = EarnPointResultDto.builder()
                 .pointId(point.getId().toString())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(3000l)
-                .brandId(cafe.getId().toString())
+                .brandId(moonbucks.getId().toString())
                 .memberId(member.getId().toString())
                 .pointId(point.getId().toString())
                 .isSuccess(true)
@@ -98,8 +98,8 @@ class PointOrderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().getMember().getId()).isEqualTo(member.getId());
-        assertThat(result.get().getBrandName()).isEqualTo(cafe.getName());
-        assertThat(result.get().getStoreName()).isEqualTo(moonbucks.getName());
+        assertThat(result.get().getBrandName()).isEqualTo(moonbucks.getName());
+        assertThat(result.get().getStoreName()).isEqualTo(moonbucksMetan.getName());
         assertThat(result.get().getRequestedPointAmount()).isEqualTo(3000l);
         assertThat(result.get().getType()).isEqualTo(PointOrderType.EARN);
 
@@ -118,17 +118,17 @@ class PointOrderServiceTest {
                 .build();
 
         CheckedStoreDto checkedStoreDto = CheckedStoreDto.builder()
-                .brandName(cafe.getName())
-                .brandId(cafe.getId().toString())
-                .storeName(moonbucks.getName())
-                .storeId(moonbucks.getId().toString())
+                .brandName(moonbucks.getName())
+                .brandId(moonbucks.getId().toString())
+                .storeName(moonbucksMetan.getName())
+                .storeId(moonbucksMetan.getId().toString())
                 .build();
 
         UsePointResultDto usePointResultDto = UsePointResultDto.builder()
                 .pointId(point.getId().toString())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(2000l)
-                .brandId(cafe.getId().toString())
+                .brandId(moonbucks.getId().toString())
                 .memberId(member.getId().toString())
                 .pointId(point.getId().toString())
                 .isSuccess(true)
@@ -143,8 +143,8 @@ class PointOrderServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().getMember().getId()).isEqualTo(member.getId());
-        assertThat(result.get().getBrandName()).isEqualTo(cafe.getName());
-        assertThat(result.get().getStoreName()).isEqualTo(moonbucks.getName());
+        assertThat(result.get().getBrandName()).isEqualTo(moonbucks.getName());
+        assertThat(result.get().getStoreName()).isEqualTo(moonbucksMetan.getName());
         assertThat(result.get().getRequestedPointAmount()).isEqualTo(2000l);
         assertThat(result.get().getType()).isEqualTo(PointOrderType.USE);
 
@@ -156,27 +156,27 @@ class PointOrderServiceTest {
     public void searchPointOrder_성공() {
 
         // given
-        PointOrder pointOrder1 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 5000L);
+        PointOrder pointOrder1 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 5000L);
         pointOrderRepository.save(pointOrder1);
         LocalDateTime startTime = LocalDateTime.now();
-        PointOrder pointOrder2 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder2 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
         pointOrderRepository.save(pointOrder2);
-        PointOrder pointOrder3 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.USE, 2000L);
+        PointOrder pointOrder3 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 2000L);
         pointOrderRepository.save(pointOrder3);
-        PointOrder pointOrder4 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.USE, 1000L);
+        PointOrder pointOrder4 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 1000L);
         pointOrderRepository.save(pointOrder4);
-        PointOrder pointOrder5 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder5 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
         pointOrderRepository.save(pointOrder5);
-        PointOrder pointOrder6 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 7000L);
+        PointOrder pointOrder6 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 7000L);
         pointOrderRepository.save(pointOrder6);
-        PointOrder pointOrder7 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder7 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
         pointOrderRepository.save(pointOrder7);
-        PointOrder pointOrder8 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.USE, 500L);
+        PointOrder pointOrder8 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 500L);
         pointOrderRepository.save(pointOrder8);
-        PointOrder pointOrder9 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 4000L);
+        PointOrder pointOrder9 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 4000L);
         pointOrderRepository.save(pointOrder9);
         LocalDateTime endTime = LocalDateTime.now();
-        PointOrder pointOrder10 = PointOrder.createPointOrder(member, cafe.getName(), moonbucks.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder10 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
         pointOrderRepository.save(pointOrder10);
 
         // when

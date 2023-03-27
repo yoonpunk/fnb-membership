@@ -36,10 +36,10 @@ class StoreServiceTest {
     @BeforeEach
     public void init() {
 
-        existBrand = Brand.createBrand("CAFE");
+        existBrand = Brand.createBrand("MOONBUCKS");
         brandRepository.save(existBrand);
 
-        existStore = Store.createStore("MOONBUCKS", existBrand);
+        existStore = Store.createStore("MOONBUCKS 매탄점", existBrand);
         storeRepository.save(existStore);
 
         storeService = new StoreService(storeRepository);

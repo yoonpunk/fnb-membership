@@ -62,7 +62,7 @@ class PointServiceTest {
     void earnPoint_적립_최초_1회_성공() {
 
         // given
-        Brand newBrand = Brand.createBrand("MARSBAKERY");
+        Brand newBrand = Brand.createBrand("BURGERQUEEN");
         brandRepository.save(newBrand);
 
         // 가입된 회원, 최초 적립하는 브랜드
@@ -94,7 +94,7 @@ class PointServiceTest {
     void earnPoint_적립_1회_성공() {
 
         // given
-        Brand newBrand = Brand.createBrand("MARSBAKERY");
+        Brand newBrand = Brand.createBrand("BURGERQUEEN");
         brandRepository.save(newBrand);
 
         // 가입된 회원, 적립된 적 있는 브랜드
@@ -126,7 +126,7 @@ class PointServiceTest {
     void usePoint_사용_1회_성공() {
 
         // given
-        Brand newBrand = Brand.createBrand("MARSBAKERY");
+        Brand newBrand = Brand.createBrand("BURGERQUEEN");
         brandRepository.save(newBrand);
 
         // 가입된 회원, 적립된 적 있는 브랜드의 포인트 사용
