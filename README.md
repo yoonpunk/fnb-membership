@@ -53,10 +53,10 @@ Springboot 기반의 애플리케이션을 직접 구현하며, 개발에 필요
 
 ## 설계 및 구조
 ### ERD
-[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership)
+[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership/issues/1)
 ![erd](https://user-images.githubusercontent.com/16172668/227227711-5e282739-8243-4608-87f6-47e391a2dda6.png)
 
 
 ### 클래스 다이어그램
-[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership/issues/1)
+[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership/issues/2)
 ![classdiagram](https://user-images.githubusercontent.com/16172668/227721897-cbbb305d-db1e-41f2-8da0-aa377394f1e4.png)
