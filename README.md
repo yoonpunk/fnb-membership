@@ -53,9 +53,49 @@ Springboot 기반의 애플리케이션을 직접 구현하며, 개발에 필요
 
 ## 설계 및 구조
 ### ERD
-[🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership/issues/1)
-![erd](https://user-images.githubusercontent.com/16172668/227227711-5e282739-8243-4608-87f6-47e391a2dda6.png)
+자세한 내용은 [🔗 entity_diagram_2023-03-23.md](documents/diagrams/entity_diagram_2023-03-23.md) 파일을 참고하세요.
+```mermaid
+erDiagram
+    BRAND {
+        binary(16) brand_id PK
+        varchar(255) brand_name
+        datetime(6) created_at
+    }
+    MEMBER {
+        binary(16) member_id PK
+        varchar(12) barcode UK
+        varchar(11) phone UK
+        datetime(6) created_at
+    }
+    POINT_ORDER {
+        binary(16) point_order_id PK
+        binary(16) member_id FK
+        varchar(255) brand_name
+        varchar(255) store_name
+        varchar(255) type
+        bigint requested_point_amount
+        datetime(6) approved_at
+    }
+    STORE {
+        binary(16) store_id PK
+        binary(16) brand_id FK
+        varchar(255) store_name
+        datetime(6) created_at
+    }
+    POINT {
+        binary(16) point_id PK
+        binary(16) brand_id FK
+        binary(16) member_id FK
+        bigint amount
+        datetime(6) created_at
+        bigint version
+    }
 
+    POINT |o--|| BRAND : brand_id
+    POINT }o--|| MEMBER : member_id
+    STORE }o--|| BRAND : brand_id
+    POINT_ORDER }o--|| MEMBER : member_id
+```
 
 ### 클래스 다이어그램
 Controller - Service - Repository  세 레이어의 위치한 클래스 관계를 나타냅니다.  
