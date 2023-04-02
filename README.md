@@ -58,5 +58,8 @@ Springboot 기반의 애플리케이션을 직접 구현하며, 개발에 필요
 
 
 ### 클래스 다이어그램
+Controller - Service - Repository  세 레이어의 위치한 클래스 관계를 나타냅니다.  
+자세한 내용은 [🔗 class_diagram_2023-03-23.md](documents/class_diagram_2023-03-23.md) 파일을 참고하세요.
+
 [🔗 자세한 내용은 여기로](https://github.com/yoonpunk/fnb-membership/issues/2)
 ![classdiagram](https://user-images.githubusercontent.com/16172668/227721897-cbbb305d-db1e-41f2-8da0-aa377394f1e4.png)
