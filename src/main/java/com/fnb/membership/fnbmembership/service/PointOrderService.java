@@ -11,15 +11,16 @@ import com.fnb.membership.fnbmembership.repository.PointRepository;
 import com.fnb.membership.fnbmembership.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
- * 포인트를 사용요청/적립요청을 생성하기위한 서비스
+ * A service for creating and searching pointOrders.
  */
 @Service
 @RequiredArgsConstructor
@@ -33,11 +34,11 @@ public class PointOrderService {
     private final StoreRepository storeRepository;
 
     /**
-     * PointOrder PointOrderType.EARN 생성을 위한 메서드
-     * @param checkedMember 검증된 회원 정보
-     * @param checkedStore 검증된 점포 정보
-     * @param earnPointResultDto 포인트 적립 요청 결과 정보
-     * @return CreatePointOrderResultDto 생성된 PointOrder의 정보가 담긴 DTO
+     * This method creates a pointOrder with the type of PointOrderType.EARN.
+     * @param checkedMember
+     * @param checkedStore
+     * @param earnPointResultDto
+     * @return CreatePointOrderResultDto
      * @throws NoSuchMemberException
      * @throws NoSuchStoreException
      * @throws IllegalArgumentException
@@ -54,7 +55,7 @@ public class PointOrderService {
                 " isSuccess=" + earnPointResultDto.isSuccess() +
                 " requestedPointAmount=" + earnPointResultDto.getRequestedAmount());
 
-        // Member 객체 조회
+        // Searching the member.
         Optional<Member> searchedMember = memberRepository.findById(UUID.fromString(checkedMember.getId()));
 
         if (searchedMember.isEmpty()) {
@@ -62,14 +63,14 @@ public class PointOrderService {
             throw new NoSuchMemberException();
         }
 
-        // Store 객체 조회
+        // Searching the store.
         Optional<Store> searchedStore = storeRepository.findByIdWithBrand(UUID.fromString(checkedStore.getStoreId()));
 
         if (searchedStore.isEmpty()) {
             log.error("store is invalid. storeId=" + checkedStore.getStoreId());
             throw new NoSuchStoreException();
         }
-        // Point 객체 조회
+        // Searching the point.
         Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(earnPointResultDto.getPointId()));
 
         if (searchedPoint.isEmpty()) {
@@ -77,8 +78,8 @@ public class PointOrderService {
             throw new NoSuchPointExcpetion();
         }
 
-        // PointOrder 생성
-        // earnPointResultDto의 성공여부 체크, 실패 시 예외처리
+        // Creating a pointOrder.
+        // Check the success status of earnPointResultDto and handle exceptions in case of failure.
         if (!earnPointResultDto.isSuccess()) {
             throw new IllegalArgumentException("Failed Point result.");
         }
@@ -107,11 +108,11 @@ public class PointOrderService {
     }
 
     /**
-     * PointOrder PointOrderType.USE 생성을 위한 메서드
-     * @param checkedMember 검증된 회원 정보
-     * @param checkedStore 검증된 점포 정보
-     * @param usePointResultDto 포인트 사용 요청 결과 정보
-     * @return CreatePointOrderResultDto 생성된 PointOrder의 정보가 담긴 DTO
+     * This method creates a pointOrder with the type of PointOrderType.USE.
+     * @param checkedMember
+     * @param checkedStore
+     * @param usePointResultDto
+     * @return CreatePointOrderResultDto
      * @throws NoSuchMemberException
      * @throws NoSuchStoreException
      * @throws IllegalArgumentException
@@ -128,7 +129,7 @@ public class PointOrderService {
                 " isSuccess=" + usePointResultDto.isSuccess() +
                 " requestedPointAmount=" + usePointResultDto.getRequestedAmount());
 
-        // Member 객체 조회
+        // Searching the member.
         Optional<Member> searchedMember = memberRepository.findById(UUID.fromString(checkedMember.getId()));
 
         if (searchedMember.isEmpty()) {
@@ -136,7 +137,7 @@ public class PointOrderService {
             throw new NoSuchMemberException();
         }
 
-        // Store 객체 조회
+        // Searching the store.
         Optional<Store> searchedStore = storeRepository.findById(UUID.fromString(checkedStore.getStoreId()));
 
         if (searchedStore.isEmpty()) {
@@ -144,7 +145,7 @@ public class PointOrderService {
             throw new NoSuchStoreException();
         }
 
-        // Point 객체 조회
+        // Searching the point
         Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(usePointResultDto.getPointId()));
 
         if (searchedPoint.isEmpty()) {
@@ -152,8 +153,8 @@ public class PointOrderService {
             throw new NoSuchPointExcpetion();
         }
 
-        // PointOrder 생성
-        // usePointResultDto 성공여부 체크, 실패 시 예외처리
+        // Creating a pointOrder
+        // Checks the success status of usePointResultDto and handle exceptions in case of failure.
         if (!usePointResultDto.isSuccess()) {
             throw new IllegalArgumentException("Failed Point result.");
         }
@@ -186,30 +187,29 @@ public class PointOrderService {
      * @param searchPointOrder A DTO object containing search conditions.
      * @return A List of searched pointOrder histories.
      */
-    public Slice<SearchedPointOrderDto> searchPointOrder(SearchPointOrderDto searchPointOrder) {
+    public List<SearchedPointOrderDto> searchPointOrder(SearchPointOrderDto searchPointOrder) {
 
         log.info("searchPointOrder requested. " +
                 " memberId=" + searchPointOrder.getMemberId() +
                 " startTime=" + searchPointOrder.getStartTime() +
                 " endTime=" + searchPointOrder.getStartTime());
 
-        Slice<PointOrder> sliceByMemberId = pointOrderRepository.findSliceByMemberIdAndTime(
+        List<PointOrder> pointOrders = pointOrderRepository.findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(
                 UUID.fromString(searchPointOrder.getMemberId()),
                 searchPointOrder.getStartTime(),
                 searchPointOrder.getEndTime(),
-                searchPointOrder.getPageable()
+                searchPointOrder.getPage(),
+                searchPointOrder.getSize()
         );
 
-        Slice<SearchedPointOrderDto> searchedPointOrderDtos = sliceByMemberId.map(
-                pointOrder -> SearchedPointOrderDto.builder()
+        return pointOrders.stream()
+                .map(pointOrder -> SearchedPointOrderDto.builder()
                         .approvedAt(pointOrder.getApprovedAt())
                         .requestedAmount(pointOrder.getRequestedPointAmount())
                         .brandName(pointOrder.getBrandName())
                         .storeName(pointOrder.getStoreName())
                         .pointOrderType(pointOrder.getType())
-                        .build()
-        );
-
-        return searchedPointOrderDtos;
+                        .build())
+                .collect(Collectors.toList());
     }
 }

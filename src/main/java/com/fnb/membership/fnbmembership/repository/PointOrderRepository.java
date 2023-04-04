@@ -1,25 +1,37 @@
 package com.fnb.membership.fnbmembership.repository;
 
 import com.fnb.membership.fnbmembership.domain.PointOrder;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-/**
- * PointOrder Entity Repository
- */
-@Repository
-public interface PointOrderRepository extends JpaRepository<PointOrder, UUID> {
 
-    @Query("SELECT po " +
-            "FROM PointOrder po " +
-            "WHERE po.member.id = :memberId " +
-            "AND po.approvedAt " +
-            "BETWEEN :startTime AND :endTime")
-    Slice<PointOrder> findSliceByMemberIdAndTime(UUID memberId, LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+public interface PointOrderRepository {
+
+    /**
+     * saves a given entity.
+     * @param entity an entity of PointOrder class
+     * @return the saved entity.
+     */
+    <S extends PointOrder> S save(S entity);
+
+    /**
+     * Retrives an entity by its id.
+     * @param id
+     * @return the entity with the given id or empty Optional if none found.
+     */
+    Optional<PointOrder> findById(UUID id);
+
+    /**
+     * finds PointOrder entities with the given parameters via paging.
+     * @param memberId
+     * @param startTime
+     * @param endTime
+     * @param page
+     * @param size
+     * @return
+     */
+    List<PointOrder> findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(UUID memberId, LocalDateTime startTime, LocalDateTime endTime, int page, int size);
 }

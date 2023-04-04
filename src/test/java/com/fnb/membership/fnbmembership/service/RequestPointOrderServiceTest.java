@@ -7,6 +7,7 @@ import com.fnb.membership.fnbmembership.domain.Store;
 import com.fnb.membership.fnbmembership.dto.RequestEarnPointOrderResultDto;
 import com.fnb.membership.fnbmembership.dto.RequestUsePointOrderResultDto;
 import com.fnb.membership.fnbmembership.repository.*;
+import com.fnb.membership.fnbmembership.repository.jpa.PointOrderJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +23,6 @@ import static org.assertj.core.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class RequestPointOrderServiceTest {
 
-    private RequestPointOrderService requestPointOrderService;
-
     @Autowired
     private MemberRepository memberRepository;
 
@@ -38,6 +37,8 @@ class RequestPointOrderServiceTest {
 
     @Autowired
     private PointOrderRepository pointOrderRepository;
+
+    private RequestPointOrderService requestPointOrderService;
 
     private MemberService memberService;
 

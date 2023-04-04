@@ -14,6 +14,7 @@ public class SearchPointOrderDto {
     private String memberId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Pageable pageable;
+    private int page;
+    private int size;
 
 }
