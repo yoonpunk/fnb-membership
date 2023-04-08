@@ -14,6 +14,8 @@ import java.util.UUID;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, UUID> {
 
+    Optional<Store> findByName(String name);
+
     @Query("SELECT s FROM Store s JOIN FETCH s.brand b WHERE s.id = :id")
     Optional<Store> findByIdWithBrand(UUID id);
 }
