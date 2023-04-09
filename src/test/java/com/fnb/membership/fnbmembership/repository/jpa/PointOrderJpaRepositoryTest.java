@@ -58,9 +58,79 @@ class PointOrderJpaRepositoryTest {
 
         // Sort expectedPointOrders by DESC and Check expectedPointOrders.
         Collections.sort(expectedPointOrders, (o1, o2) -> o2.getApprovedAt().compareTo(o1.getApprovedAt()));
-        assertThat(actual.get(0)).isEqualTo(expectedPointOrders.get(0));
-        assertThat(actual.get(1)).isEqualTo(expectedPointOrders.get(1));
-        assertThat(actual.get(2)).isEqualTo(expectedPointOrders.get(2));
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedPointOrders.subList(0, 3));
+    }
+
+    // This is a test to verify the results of the second(actually last) retrieved page sorted by approvedAt DESC
+    @Test
+    void testFindByMemberIdAndTimeWithPageableVerifyingSecondPage() {
+
+        // arrange
+        // Called the setup method directly in the test code to explicitly show it, without using @BeforeEach.
+        List<PointOrder> expectedPointOrders = setUpFivePointOrdersForSearchingTest();
+        Member member = memberRepository.findByPhone("01012345678").get();
+
+        Pageable pageable = PageRequest.of(1, 3, Sort.by("approvedAt").descending());
+        LocalDateTime startTime = LocalDateTime.of(2023, 3, 1, 10, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(2023, 3, 1, 10, 7, 0);
+
+        // act
+        List<PointOrder> actual = sut.findByMemberIdAndTimeWithPageable(member.getId(), startTime, endTime, pageable);
+
+        // assert
+        assertThat(actual.size()).isEqualTo(2);
+
+        // Sort expectedPointOrders by DESC and Check expectedPointOrders.
+        Collections.sort(expectedPointOrders, (o1, o2) -> o2.getApprovedAt().compareTo(o1.getApprovedAt()));
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedPointOrders.subList(3, 5));
+    }
+
+    // This is a test to verify the results of the first retrieved page sorted by approvedAt DESC
+    @Test
+    void testFindByMemberIdAndTimeOrderByApprovedAtDescWithPagingVerifyingFirstPage() {
+
+        // arrange
+        // Called the setup method directly in the test code to explicitly show it, without using @BeforeEach.
+        List<PointOrder> expectedPointOrders = setUpFivePointOrdersForSearchingTest();
+        Member member = memberRepository.findByPhone("01012345678").get();
+
+        LocalDateTime startTime = LocalDateTime.of(2023, 3, 1, 10, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(2023, 3, 1, 10, 7, 0);
+
+        // act
+        List<PointOrder> actual = sut.findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(
+                member.getId(), startTime, endTime, 0, 3);
+
+        // assert
+        assertThat(actual.size()).isEqualTo(3);
+
+        // Sort expectedPointOrders by DESC and Check expectedPointOrders.
+        Collections.sort(expectedPointOrders, (o1, o2) -> o2.getApprovedAt().compareTo(o1.getApprovedAt()));
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedPointOrders.subList(0, 3));
+    }
+
+    // This is a test to verify the results of the second(actually last) retrieved page sorted by approvedAt DESC
+    @Test
+    void testFindByMemberIdAndTimeOrderByApprovedAtDescWithPagingVerifyingSecondPage() {
+
+        // arrange
+        // Called the setup method directly in the test code to explicitly show it, without using @BeforeEach.
+        List<PointOrder> expectedPointOrders = setUpFivePointOrdersForSearchingTest();
+        Member member = memberRepository.findByPhone("01012345678").get();
+
+        LocalDateTime startTime = LocalDateTime.of(2023, 3, 1, 10, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(2023, 3, 1, 10, 7, 0);
+
+        // act
+        List<PointOrder> actual = sut.findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(
+                member.getId(), startTime, endTime, 1, 3);
+
+        // assert
+        assertThat(actual.size()).isEqualTo(2);
+
+        // Sort expectedPointOrders by DESC and Check expectedPointOrders.
+        Collections.sort(expectedPointOrders, (o1, o2) -> o2.getApprovedAt().compareTo(o1.getApprovedAt()));
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedPointOrders.subList(3, 5));
     }
 
     /**
