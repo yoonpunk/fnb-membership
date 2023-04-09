@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.OptimisticLockException;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A service to manage point information.
@@ -72,7 +73,7 @@ public class PointService {
                     throw new NoSuchBrandException();
                 }
 
-                resultPoint = Point.createPointWithUuid(member.get(), brand.get(), earnPointDto.getAmount(), LocalDateTime.now());
+                resultPoint = Point.createPoint(UUID.randomUUID(), member.get(), brand.get(), earnPointDto.getAmount(), LocalDateTime.now());
                 resultPoint = pointRepository.save(resultPoint);
 
                 EarnPointResultDto result = EarnPointResultDto.builder()

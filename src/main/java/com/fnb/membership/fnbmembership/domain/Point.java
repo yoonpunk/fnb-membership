@@ -62,17 +62,14 @@ public class Point {
     }
 
     /**
-     * Creates a point object with auto-generated UUID.
+     * Create a Point object.
+     * @param uuid
      * @param member
      * @param brand
      * @param amount
      * @param createdAt
      * @return
      */
-    public static Point createPointWithUuid(@NotNull Member member, @NotNull Brand brand, @NotNull Long amount, @NotNull LocalDateTime createdAt) {
-        return new Point(UUID.randomUUID(), member, brand, amount, createdAt);
-    }
-
     public static Point createPoint(@NotNull UUID uuid, @NotNull Member member, @NotNull Brand brand, @NotNull Long amount, @NotNull LocalDateTime createdAt) {
         return new Point(uuid, member, brand, amount, createdAt);
     }

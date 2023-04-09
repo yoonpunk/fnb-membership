@@ -55,19 +55,13 @@ public class Store {
     }
 
     /**
-     * Creates a store object with auto-generated UUID.
+     * Create a Store.
+     * @param uuid
      * @param name
      * @param brand
      * @param createdAt
      * @return
      */
-    public static Store createStoreWithUuid(
-            @NotBlank String name,
-            @NotNull Brand brand,
-            @NotNull LocalDateTime createdAt) {
-        return new Store(UUID.randomUUID(), name, brand, createdAt);
-    }
-
     public static Store createStore(@NotNull UUID uuid, @NotBlank String name, @NotNull Brand brand, @NotNull LocalDateTime createdAt) {
         return new Store(uuid, name, brand, createdAt);
     }

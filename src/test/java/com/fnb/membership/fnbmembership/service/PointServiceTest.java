@@ -51,10 +51,10 @@ class PointServiceTest {
     void testEarnPointFirstTime() {
 
         // arrange
-        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), "01012345678", Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
-        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        Brand expectedBrand = Brand.createBrand(UUID.randomUUID(), "MOONBUCKS", LocalDateTime.now());
         expectedBrand = brandRepository.save(expectedBrand);
 
         // A registered member
@@ -80,13 +80,13 @@ class PointServiceTest {
     void testEarnPointAlreadyExists() {
 
         // arrange
-        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), "01012345678", Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
-        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        Brand expectedBrand = Brand.createBrand(UUID.randomUUID(), "MOONBUCKS", LocalDateTime.now());
         expectedBrand = brandRepository.save(expectedBrand);
 
-        Point expectedPoint = Point.createPointWithUuid(expectedMember, expectedBrand, 5000L, LocalDateTime.now());
+        Point expectedPoint = Point.createPoint(UUID.randomUUID(), expectedMember, expectedBrand, 5000L, LocalDateTime.now());
         expectedPoint = pointRepository.save(expectedPoint);
 
         // A registered member
@@ -113,13 +113,13 @@ class PointServiceTest {
     void testUsePointWhenPointsAreSufficient() {
 
         // arrange
-        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), "01012345678", Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
-        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        Brand expectedBrand = Brand.createBrand(UUID.randomUUID(), "MOONBUCKS", LocalDateTime.now());
         expectedBrand = brandRepository.save(expectedBrand);
 
-        Point expectedPoint = Point.createPointWithUuid(expectedMember, expectedBrand, 5000L, LocalDateTime.now());
+        Point expectedPoint = Point.createPoint(UUID.randomUUID(), expectedMember, expectedBrand, 5000L, LocalDateTime.now());
         expectedPoint = pointRepository.save(expectedPoint);
 
         // A registered member
@@ -145,13 +145,13 @@ class PointServiceTest {
     void testUserPointWhenPointsAreNotSufficient() {
 
         // arrange
-        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), "01012345678", Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
-        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        Brand expectedBrand = Brand.createBrand(UUID.randomUUID(), "MOONBUCKS", LocalDateTime.now());
         expectedBrand = brandRepository.save(expectedBrand);
 
-        Point expectedPoint = Point.createPointWithUuid(expectedMember, expectedBrand, 5000L, LocalDateTime.now());
+        Point expectedPoint = Point.createPoint(UUID.randomUUID(), expectedMember, expectedBrand, 5000L, LocalDateTime.now());
         expectedPoint = pointRepository.save(expectedPoint);
 
         // A registered member

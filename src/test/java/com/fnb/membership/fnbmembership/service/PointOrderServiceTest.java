@@ -46,16 +46,16 @@ class PointOrderServiceTest {
 
         pointOrderService = new PointOrderService(pointOrderRepository, memberRepository, pointRepository, storeRepository);
 
-        member = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        member = Member.createMember(UUID.randomUUID(), "01012345678", Member.createBarcode(), LocalDateTime.now());
         memberRepository.save(member);
 
-        moonbucks = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        moonbucks = Brand.createBrand(UUID.randomUUID(), "MOONBUCKS", LocalDateTime.now());
         brandRepository.save(moonbucks);
 
-        moonbucksMetan = Store.createStoreWithUuid("MOONBUCKS 매탄점", moonbucks, LocalDateTime.now());
+        moonbucksMetan = Store.createStore(UUID.randomUUID(), "MOONBUCKS 매탄점", moonbucks, LocalDateTime.now());
         storeRepository.save(moonbucksMetan);
 
-        point = Point.createPointWithUuid(member, moonbucks, 5000L, LocalDateTime.now());
+        point = Point.createPoint(UUID.randomUUID(), member, moonbucks, 5000L, LocalDateTime.now());
         pointRepository.save(point);
 
     }
@@ -154,27 +154,27 @@ class PointOrderServiceTest {
     public void searchPointOrder_성공() {
 
         // given
-        PointOrder pointOrder1 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 5000L, LocalDateTime.now());
+        PointOrder pointOrder1 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 5000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder1);
         LocalDateTime startTime = LocalDateTime.now();
-        PointOrder pointOrder2 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
+        PointOrder pointOrder2 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder2);
-        PointOrder pointOrder3 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 2000L, LocalDateTime.now());
+        PointOrder pointOrder3 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 2000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder3);
-        PointOrder pointOrder4 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 1000L, LocalDateTime.now());
+        PointOrder pointOrder4 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 1000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder4);
-        PointOrder pointOrder5 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
+        PointOrder pointOrder5 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder5);
-        PointOrder pointOrder6 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 7000L, LocalDateTime.now());
+        PointOrder pointOrder6 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 7000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder6);
-        PointOrder pointOrder7 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
+        PointOrder pointOrder7 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder7);
-        PointOrder pointOrder8 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 500L, LocalDateTime.now());
+        PointOrder pointOrder8 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 500L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder8);
-        PointOrder pointOrder9 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 4000L, LocalDateTime.now());
+        PointOrder pointOrder9 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 4000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder9);
         LocalDateTime endTime = LocalDateTime.now();
-        PointOrder pointOrder10 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
+        PointOrder pointOrder10 = PointOrder.createPointOrder(UUID.randomUUID(), member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder10);
 
         // when

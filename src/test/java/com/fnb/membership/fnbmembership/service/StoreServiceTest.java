@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,8 +44,8 @@ class StoreServiceTest {
     void testCheckStoreIfStoreIsValid() {
 
         // arrange
-        Brand expectedBrand = brandRepository.save(Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now()));
-        Store expectedStore = storeRepository.save(Store.createStoreWithUuid("MOONBUCKS 매탄점", expectedBrand, LocalDateTime.now()));
+        Brand expectedBrand = brandRepository.save(Brand.createBrand(UUID.randomUUID(), "MOONBUCKS", LocalDateTime.now()));
+        Store expectedStore = storeRepository.save(Store.createStore(UUID.randomUUID(), "MOONBUCKS 매탄점", expectedBrand, LocalDateTime.now()));
 
         // act
         CheckedStoreDto checkedStoreDto = sut.checkStore(expectedStore.getId());

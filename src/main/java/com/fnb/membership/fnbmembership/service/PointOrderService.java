@@ -85,7 +85,8 @@ public class PointOrderService {
             throw new IllegalArgumentException("Failed Point result.");
         }
 
-        PointOrder pointOrder = PointOrder.createPointOrderWithUuid(
+        PointOrder pointOrder = PointOrder.createPointOrder(
+                UUID.randomUUID(),
                 searchedMember.get().getId(),
                 searchedStore.get().getBrand().getName(),
                 searchedStore.get().getName(),
@@ -161,7 +162,8 @@ public class PointOrderService {
             throw new IllegalArgumentException("Failed Point result.");
         }
 
-        PointOrder pointOrder = PointOrder.createPointOrderWithUuid(
+        PointOrder pointOrder = PointOrder.createPointOrder(
+                UUID.randomUUID(),
                 searchedMember.get().getId(),
                 searchedStore.get().getBrand().getName(),
                 searchedStore.get().getName(),

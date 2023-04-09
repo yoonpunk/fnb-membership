@@ -37,7 +37,7 @@ class MemberServiceTest {
 
         // arrange
         String expectedPhone = "01012345678";
-        Member expectedMember = Member.createMemberWithUuidAndBarcode(expectedPhone, LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), expectedPhone, Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
         // act
@@ -52,7 +52,7 @@ class MemberServiceTest {
 
         // arrange
         String expectedPhone = "01012345678";
-        Member expectedMember = Member.createMemberWithUuidAndBarcode(expectedPhone, LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), expectedPhone, Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
         // act
@@ -67,7 +67,7 @@ class MemberServiceTest {
 
         // arrange
         String expectedPhone = "01012345678";
-        Member expectedMember = Member.createMemberWithUuidAndBarcode(expectedPhone, LocalDateTime.now());
+        Member expectedMember = Member.createMember(UUID.randomUUID(), expectedPhone, Member.createBarcode(), LocalDateTime.now());
         expectedMember = memberRepository.save(expectedMember);
 
         // act

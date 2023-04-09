@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,22 +67,22 @@ class RequestPointOrderServiceTest {
         pointOrderService = new PointOrderService(pointOrderRepository, memberRepository, pointRepository, storeRepository);
         requestPointOrderService = new RequestPointOrderService(memberService, storeService, pointService, pointOrderService);
 
-        existMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        existMember = Member.createMember(UUID.randomUUID(),"01012345678", Member.createBarcode(), LocalDateTime.now());
         memberRepository.save(existMember);
 
-        seoulBaguette = Brand.createBrandWithUuid("SEOULBAGUETTE", LocalDateTime.now());
+        seoulBaguette = Brand.createBrand(UUID.randomUUID(), "SEOULBAGUETTE", LocalDateTime.now());
         brandRepository.save(seoulBaguette);
 
-        seoulBaguetteSinsa = Store.createStoreWithUuid("SEOULBAGUETTE 신사점", seoulBaguette, LocalDateTime.now());
+        seoulBaguetteSinsa = Store.createStore(UUID.randomUUID(), "SEOULBAGUETTE 신사점", seoulBaguette, LocalDateTime.now());
         storeRepository.save(seoulBaguetteSinsa);
 
-        burgerQueen = Brand.createBrandWithUuid("BURGERQUEEN", LocalDateTime.now());
+        burgerQueen = Brand.createBrand(UUID.randomUUID(), "BURGERQUEEN", LocalDateTime.now());
         brandRepository.save(burgerQueen);
 
-        burgerQueenPangyo = Store.createStoreWithUuid("BURGERQUEEN 판교점", burgerQueen, LocalDateTime.now());
+        burgerQueenPangyo = Store.createStore(UUID.randomUUID(), "BURGERQUEEN 판교점", burgerQueen, LocalDateTime.now());
         storeRepository.save(burgerQueenPangyo);
 
-        Point point = Point.createPointWithUuid(existMember, burgerQueen, 15000l, LocalDateTime.now());
+        Point point = Point.createPoint(UUID.randomUUID(), existMember, burgerQueen, 15000l, LocalDateTime.now());
         pointRepository.save(point);
 
     }

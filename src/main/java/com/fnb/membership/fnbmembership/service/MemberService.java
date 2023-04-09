@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A service to manage members.
@@ -54,7 +55,7 @@ public class MemberService {
 
         // If the member doesn't exist, create a new member and return it.
         try {
-            Member newMember = Member.createMemberWithUuidAndBarcode(phone, LocalDateTime.now());
+            Member newMember = Member.createMember(UUID.randomUUID(), phone, Member.createBarcode(), LocalDateTime.now());
             newMember = memberRepository.save(newMember);
 
             log.info("creating new member is completed. phone=" + newMember.getPhone());

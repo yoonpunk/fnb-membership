@@ -55,17 +55,7 @@ public class Member {
     }
 
     /**
-     * Creates a member object with auto-generated UUID.
-     * @param phone
-     * @param createdAt
-     * @return
-     */
-    public static Member createMemberWithUuidAndBarcode(@NotBlank String phone, @NotNull LocalDateTime createdAt) {
-        return new Member(UUID.randomUUID(), phone, createBarcode(), createdAt);
-    }
-
-    /**
-     * Creates a member object while verifies barcode format.
+     * Create a member object while verifies barcode format.
      * @param uuid
      * @param phone
      * @param barcode
@@ -85,7 +75,7 @@ public class Member {
      * A static method for creating barcode number. (Twelve-digit number)
      * @return
      */
-    private static String createBarcode() {
+    public static String createBarcode() {
 
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());

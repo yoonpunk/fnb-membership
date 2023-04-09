@@ -50,17 +50,7 @@ public class Brand {
     }
 
     /**
-     * Creates a brand object with auto-generated UUID.
-     * @param name
-     * @param createdAt
-     * @return
-     */
-    public static Brand createBrandWithUuid(@NotBlank String name, @NotNull LocalDateTime createdAt) {
-        return new Brand(UUID.randomUUID(), name, createdAt);
-    }
-
-    /**
-     * Creates a brand object.
+     * Create a brand object.
      * @param name
      * @param createdAt
      * @return

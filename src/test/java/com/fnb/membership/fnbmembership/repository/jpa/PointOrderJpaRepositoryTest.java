@@ -4,7 +4,6 @@ import com.fnb.membership.fnbmembership.domain.Member;
 import com.fnb.membership.fnbmembership.domain.PointOrder;
 import com.fnb.membership.fnbmembership.domain.PointOrderType;
 import com.fnb.membership.fnbmembership.repository.MemberRepository;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -140,11 +136,16 @@ class PointOrderJpaRepositoryTest {
      */
     private List<PointOrder> setUpFivePointOrdersForSearchingTest() {
 
-        Member member = memberRepository.save(Member.createMemberWithUuidAndBarcode(
-                "01012345678", LocalDateTime.of(2023, 3, 1, 10, 1, 0)));
+        Member member = memberRepository.save(Member.createMember(
+                UUID.randomUUID(),
+                "01012345678",
+                Member.createBarcode(),
+                LocalDateTime.of(2023, 3, 1, 10, 1, 0))
+        );
 
         PointOrder pointOrder1 = sut.save(
-                PointOrder.createPointOrderWithUuid(
+                PointOrder.createPointOrder(
+                        UUID.randomUUID(),
                         member.getId(),
                         "MOONBUCKS",
                         "MOONBUCKS 매탄점",
@@ -155,7 +156,8 @@ class PointOrderJpaRepositoryTest {
         );
 
         PointOrder pointOrder2 = sut.save(
-                PointOrder.createPointOrderWithUuid(
+                PointOrder.createPointOrder(
+                        UUID.randomUUID(),
                         member.getId(),
                         "MOONBUCKS",
                         "MOONBUCKS 매탄점",
@@ -166,7 +168,8 @@ class PointOrderJpaRepositoryTest {
         );
 
         PointOrder pointOrder3 = sut.save(
-                PointOrder.createPointOrderWithUuid(
+                PointOrder.createPointOrder(
+                        UUID.randomUUID(),
                         member.getId(),
                         "MOONBUCKS",
                         "MOONBUCKS 매탄점",
@@ -177,7 +180,8 @@ class PointOrderJpaRepositoryTest {
         );
 
         PointOrder pointOrder4 = sut.save(
-                PointOrder.createPointOrderWithUuid(
+                PointOrder.createPointOrder(
+                        UUID.randomUUID(),
                         member.getId(),
                         "MOONBUCKS",
                         "MOONBUCKS 매탄점",
@@ -188,7 +192,8 @@ class PointOrderJpaRepositoryTest {
         );
 
         PointOrder pointOrder5 = sut.save(
-                PointOrder.createPointOrderWithUuid(
+                PointOrder.createPointOrder(
+                        UUID.randomUUID(),
                         member.getId(),
                         "MOONBUCKS",
                         "MOONBUCKS 매탄점",

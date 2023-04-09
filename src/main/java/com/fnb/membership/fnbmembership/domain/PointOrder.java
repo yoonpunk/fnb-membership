@@ -53,27 +53,6 @@ public class PointOrder {
 
     /**
      * Creates a pointOrder object with auto-generated UUID.
-     * @param memberId
-     * @param brandName
-     * @param storeName
-     * @param pointOrderType
-     * @param requestedPointAmount
-     * @param approvedAt
-     * @return
-     */
-    public static PointOrder createPointOrderWithUuid(
-            @NotNull Long memberId,
-            @NotEmpty String brandName,
-            @NotEmpty String storeName,
-            @NotNull PointOrderType pointOrderType,
-            @NotNull Long requestedPointAmount,
-            @NotNull LocalDateTime approvedAt) {
-        return new PointOrder(
-                UUID.randomUUID(), memberId, brandName, storeName, pointOrderType, requestedPointAmount, approvedAt);
-    }
-
-    /**
-     * Creates a pointOrder object with auto-generated UUID.
      * @param uuid
      * @param memberId
      * @param brandName
