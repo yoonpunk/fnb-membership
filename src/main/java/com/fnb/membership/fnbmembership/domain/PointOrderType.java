@@ -1,16 +1,16 @@
 package com.fnb.membership.fnbmembership.domain;
 
 /**
- * 포인트 적립/사용 내역에서 사용할 적립,사용 타입을 정의한 enum
+ * A Enum class to define PointOrderType.
  */
 public enum PointOrderType {
 
     /**
-     * 포인트 사용
+     * Use points.
      */
     USE,
     /**
-     * 포인트 적립
+     * Earn points.
      */
     EARN
 }
