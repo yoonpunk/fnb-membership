@@ -7,8 +7,8 @@ import lombok.Data;
 @Builder
 public class UsePointDto {
 
-    private String storeId;
-    private String brandId;
-    private String memberId;
+    private Long storeId;
+    private Long brandId;
+    private Long memberId;
     private Long amount;
 }

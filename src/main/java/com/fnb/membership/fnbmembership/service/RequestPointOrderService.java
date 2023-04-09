@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.OptimisticLockException;
 
 /**
- * 포인트를 사용하고 적립하기 위한 요청을 생성하는 서비스
+ * A service for requesting to use and to earn points.
  */
 @Service
 @RequiredArgsConstructor
@@ -26,19 +26,19 @@ public class RequestPointOrderService {
     private final PointService pointService;
     private final PointOrderService pointOrderService;
 
-    public RequestEarnPointOrderResultDto createEarnPointOrderByBarcode(String barcode, Long pointAmount, String storeId)
+    public RequestEarnPointOrderResultDto createEarnPointOrderByBarcode(String barcode, Long pointAmount, Long storeId)
             throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException {
 
         log.info("createEarnPointOrderByBarcode requested. " +
                 "barcde=" + barcode + " pointAmount=" + pointAmount + "storeId=" + storeId);
 
-        // 멤버 검증
+        // Checking the member by barcode.
         CheckedMemberDto checkedMemberDto = memberService.checkMemberByBarcode(barcode);
 
-        // 점포 & 브랜드 검증
+        // Checking the brand and the store.
         CheckedStoreDto checkedStoreDto = storeService.checkStore(storeId);
 
-        // 포인트 적립
+        // Earning points.
         EarnPointDto earnPointDto = EarnPointDto.builder()
                 .memberId(checkedMemberDto.getId())
                 .brandId(checkedStoreDto.getBrandId())
@@ -47,16 +47,16 @@ public class RequestPointOrderService {
 
         EarnPointResultDto earnPointResultDto = pointService.earnPoint(earnPointDto);
 
-        // 포인트 적립 결과 확인, 낙관적락 취득 실패로 인한 결과 처리
-        // 임시로 이렇게 처리, Exception Handling 리팩터링 시 수정
+        // Check the result of earning points and throw an OptimisticLockException if the operation fails.
+        // This code requires refactoring.
         if (!earnPointResultDto.isSuccess()) {
             throw new OptimisticLockException();
         }
 
-        // PointOrder 생성
+        // Creating a pointOrder.
         CreatePointOrderResultDto createPointOrderResultDto = pointOrderService.createEarnPointOrder(checkedMemberDto, checkedStoreDto, earnPointResultDto);
 
-        // 결과 리턴
+        // Returning the result.
         RequestEarnPointOrderResultDto result = RequestEarnPointOrderResultDto.builder()
                 .phone(checkedMemberDto.getPhone())
                 .barcode(checkedMemberDto.getBarcode())
@@ -70,19 +70,19 @@ public class RequestPointOrderService {
         return result;
     }
 
-    public RequestEarnPointOrderResultDto createEarnPointOrderByPhone(String phone, Long pointAmount, String storeId)
+    public RequestEarnPointOrderResultDto createEarnPointOrderByPhone(String phone, Long pointAmount, Long storeId)
             throws NoSuchMemberException, NoSuchStoreException, NoSuchBrandException, OptimisticLockException {
 
         log.info("createEarnPointOrderByPhone requested. " +
                 "phone=" + phone + " pointAmount=" + pointAmount + "storeId=" + storeId);
 
-        // 멤버 검증
+        // Checking the member by phone number.
         CheckedMemberDto checkedMemberDto = memberService.checkMemberByPhone(phone);
 
-        // 점포 & 브랜드 검증
+        // Checking the brand and store.
         CheckedStoreDto checkedStoreDto = storeService.checkStore(storeId);
 
-        // 포인트 적립
+        // Earning points.
         EarnPointDto earnPointDto = EarnPointDto.builder()
                 .memberId(checkedMemberDto.getId())
                 .brandId(checkedStoreDto.getBrandId())
@@ -91,16 +91,16 @@ public class RequestPointOrderService {
 
         EarnPointResultDto earnPointResultDto = pointService.earnPoint(earnPointDto);
 
-        // 포인트 적립 결과 확인, 낙관적락 취득 실패로 인한 결과 처리
-        // 임시로 이렇게 처리, Exception Handling 리팩터링 시 수정
+        // Check the result of earning points and throw an OptimisticLockException if the operation fails.
+        // This code requires refactoring.
         if (!earnPointResultDto.isSuccess()) {
             throw new OptimisticLockException();
         }
 
-        // PointOrder 생성
+        // Creating a pointOrder
         CreatePointOrderResultDto createPointOrderResultDto = pointOrderService.createEarnPointOrder(checkedMemberDto, checkedStoreDto, earnPointResultDto);
 
-        // 결과 리턴
+        // Returning the result.
         RequestEarnPointOrderResultDto result = RequestEarnPointOrderResultDto.builder()
                 .phone(checkedMemberDto.getPhone())
                 .barcode(checkedMemberDto.getBarcode())
@@ -114,20 +114,20 @@ public class RequestPointOrderService {
         return result;
     }
 
-    public RequestUsePointOrderResultDto createUsePointOrderByBarcode(String barcode, Long pointAmount, String storeId)
+    public RequestUsePointOrderResultDto createUsePointOrderByBarcode(String barcode, Long pointAmount, Long storeId)
             throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException, NotEnoughPointException,
             OptimisticLockException {
 
         log.info("createUsePointOrderByBarcode requested. " +
                 "barcde=" + barcode + " pointAmount=" + pointAmount + "storeId=" + storeId);
 
-        // 멤버 검증
+        // Checking the member by barcode
         CheckedMemberDto checkedMemberDto = memberService.checkMemberByBarcode(barcode);
 
-        // 점포 & 브랜드 검증
+        // Checking the brand and store.
         CheckedStoreDto checkedStoreDto = storeService.checkStore(storeId);
 
-        // 포인트 사용
+        // Using points.
         UsePointDto usePointDto = UsePointDto.builder()
                 .memberId(checkedMemberDto.getId())
                 .brandId(checkedStoreDto.getBrandId())
@@ -136,16 +136,16 @@ public class RequestPointOrderService {
 
         UsePointResultDto usePointResultDto = pointService.usePoint(usePointDto);
 
-        // 포인트 적립 결과 확인, 낙관적락 취득 실패로 인한 결과 처리
-        // 임시로 이렇게 처리, Exception Handling 리팩터링 시 수정
+        // Check the result of using points and throw an OptimisticLockException if the operation fails.
+        // This code requires refactoring.
         if (!usePointResultDto.isSuccess()) {
             throw new OptimisticLockException();
         }
 
-        // PointOrder 생성
+        // Creating a pointOrder
         CreatePointOrderResultDto createPointOrderResultDto = pointOrderService.createUsePointOrder(checkedMemberDto, checkedStoreDto, usePointResultDto);
 
-        // 결과 리턴
+        // Returning the result.
         RequestUsePointOrderResultDto result = RequestUsePointOrderResultDto.builder()
                 .phone(checkedMemberDto.getPhone())
                 .barcode(checkedMemberDto.getBarcode())
@@ -159,20 +159,20 @@ public class RequestPointOrderService {
         return result;
     }
 
-    public RequestUsePointOrderResultDto createUsePointOrderByPhone(String phone, Long pointAmount, String storeId)
+    public RequestUsePointOrderResultDto createUsePointOrderByPhone(String phone, Long pointAmount, Long storeId)
             throws NoSuchMemberException, NoSuchStoreException, IllegalArgumentException, NotEnoughPointException,
             OptimisticLockException {
 
         log.info("createUsePointOrderByPhone requested. " +
                 "barcde=" + phone + " pointAmount=" + pointAmount + "storeId=" + storeId);
 
-        // 멤버 검증
+        // Checking the member by phone.
         CheckedMemberDto checkedMemberDto = memberService.checkMemberByPhone(phone);
 
-        // 점포 & 브랜드 검증
+        // Checking the brand and the store.
         CheckedStoreDto checkedStoreDto = storeService.checkStore(storeId);
 
-        // 포인트 사용
+        // Using points.
         UsePointDto usePointDto = UsePointDto.builder()
                 .memberId(checkedMemberDto.getId())
                 .brandId(checkedStoreDto.getBrandId())
@@ -181,16 +181,16 @@ public class RequestPointOrderService {
 
         UsePointResultDto usePointResultDto = pointService.usePoint(usePointDto);
 
-        // 포인트 적립 결과 확인, 낙관적락 취득 실패로 인한 결과 처리
-        // 임시로 이렇게 처리, Exception Handling 리팩터링 시 수정
+        // Check the result of using points and throw an OptimisticLockException if the operation fails.
+        // This code requires refactoring.
         if (!usePointResultDto.isSuccess()) {
             throw new OptimisticLockException();
         }
 
-        // PointOrder 생성
+        // Creating a pointOrder.
         CreatePointOrderResultDto createPointOrderResultDto = pointOrderService.createUsePointOrder(checkedMemberDto, checkedStoreDto, usePointResultDto);
 
-        // 결과 리턴
+        // Returning result.
         RequestUsePointOrderResultDto result = RequestUsePointOrderResultDto.builder()
                 .phone(checkedMemberDto.getPhone())
                 .barcode(checkedMemberDto.getBarcode())

@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,84 +22,60 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberServiceTest {
 
+    MemberService sut;
+
     @Autowired
     MemberRepository memberRepository;
 
-    MemberService memberService;
-
-    String existBarcode;
-
     @BeforeEach
-    void init() {
-        memberService = new MemberService(memberRepository);
-
-        // 초기 데이터 생성
-        Member newMember = Member.createMember("01000000000");
-        memberRepository.save(newMember);
-        existBarcode = newMember.getBarcode();
+    void setUpSut() {
+        sut = new MemberService(memberRepository);
     }
 
     @Test
-    void join_신규_생성_성공() {
+    void testJoinUsingNewMember() {
 
-        // given
-        String phone = "01012345678";
+        // arrange
+        String expectedPhone = "01012345678";
+        Member expectedMember = Member.createMemberWithUuidAndBarcode(expectedPhone, LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
 
-        // when
-        CheckedMemberDto checkedMemberDto = memberService.join(phone);
+        // act
+        CheckedMemberDto checkedMemberDto = sut.join(expectedPhone);
 
-        // then
-        Optional<Member> memberByPhone = memberRepository.findByPhone(phone);
-        assertThat(memberByPhone).isPresent();
-        assertThat(memberByPhone.get().getPhone()).isEqualTo(phone);
-
-        assertThat(checkedMemberDto.getId()).isEqualTo(memberByPhone.get().getId().toString());
-        assertThat(checkedMemberDto.getPhone()).isEqualTo(memberByPhone.get().getPhone());
-        assertThat(checkedMemberDto.getBarcode()).isEqualTo(memberByPhone.get().getBarcode());
+        // assert
+        assertThat(checkedMemberDto).usingRecursiveComparison().isEqualTo(expectedMember);
     }
 
-//    @Test
-//    void join_회원_정보_존재() {
-//        // 추후 구현
-//    }
+    @Test
+    void testCheckMemberByPhoneIfMemberExists() {
 
-//    @Test
-//    void join_회원_신규_생성_실패() {
-//        // 추후 구현
-//    }
+        // arrange
+        String expectedPhone = "01012345678";
+        Member expectedMember = Member.createMemberWithUuidAndBarcode(expectedPhone, LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
+
+        // act
+        CheckedMemberDto checkedMemberDto = sut.checkMemberByPhone(expectedPhone);
+
+        // assert
+        assertThat(checkedMemberDto).usingRecursiveComparison().isEqualTo(expectedMember);
+    }
 
     @Test
-    void checkMemberByPhone_회원_정보_존재() {
+    void testCheckMemberByBarcodeIfMemberExists() {
 
-        // given
-        String phone = "01000000000";
+        // arrange
+        String expectedPhone = "01012345678";
+        Member expectedMember = Member.createMemberWithUuidAndBarcode(expectedPhone, LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
 
-        // when
-        CheckedMemberDto checkedMemberDto = memberService.checkMemberByPhone(phone);
+        // act
+        CheckedMemberDto checkedMemberDto = sut.checkMemberByBarcode(expectedMember.getBarcode());
 
-        // then
-        Optional<Member> memberById = memberRepository.findById(UUID.fromString(checkedMemberDto.getId()));
+        // assert
+        Optional<Member> memberById = memberRepository.findById(checkedMemberDto.getId());
         assertThat(memberById).isPresent();
-        assertThat(checkedMemberDto.getId()).isEqualTo(memberById.get().getId().toString());
-        assertThat(checkedMemberDto.getPhone()).isEqualTo(memberById.get().getPhone());
-        assertThat(checkedMemberDto.getBarcode()).isEqualTo(memberById.get().getBarcode());
-    }
-
-    @Test
-    void checkMemberByBarcode_회원_정보_존재() {
-
-        // given
-        //init method에서 생성한 멤버의 바코드정보 사용
-        String barcode = existBarcode;
-
-        // when
-        CheckedMemberDto checkedMemberDto = memberService.checkMemberByBarcode(barcode);
-
-        // then
-        Optional<Member> memberById = memberRepository.findById(UUID.fromString(checkedMemberDto.getId()));
-        assertThat(memberById).isPresent();
-        assertThat(checkedMemberDto.getId()).isEqualTo(memberById.get().getId().toString());
-        assertThat(checkedMemberDto.getPhone()).isEqualTo(memberById.get().getPhone());
-        assertThat(checkedMemberDto.getBarcode()).isEqualTo(memberById.get().getBarcode());
+        assertThat(checkedMemberDto).usingRecursiveComparison().isEqualTo(memberById.get());
     }
 }

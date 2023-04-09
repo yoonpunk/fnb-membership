@@ -15,7 +15,7 @@ public class EarnPointOrderByPhone {
     @Schema(name = "EarnPointOrderByPhoneRequest")
     public static class Request {
         private String phone;
-        private String storeId;
+        private Long storeId;
         private Long pointAmount;
     }
 

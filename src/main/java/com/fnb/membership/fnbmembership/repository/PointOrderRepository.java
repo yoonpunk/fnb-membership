@@ -22,7 +22,7 @@ public interface PointOrderRepository {
      * @param id
      * @return the entity with the given id or empty Optional if none found.
      */
-    Optional<PointOrder> findById(UUID id);
+    Optional<PointOrder> findById(Long id);
 
     /**
      * finds PointOrder entities with the given parameters via paging.
@@ -33,5 +33,5 @@ public interface PointOrderRepository {
      * @param size
      * @return
      */
-    List<PointOrder> findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(UUID memberId, LocalDateTime startTime, LocalDateTime endTime, int page, int size);
+    List<PointOrder> findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(Long memberId, LocalDateTime startTime, LocalDateTime endTime, int page, int size);
 }

@@ -12,10 +12,10 @@ import java.util.UUID;
  * Store Entity Repository
  */
 @Repository
-public interface StoreRepository extends JpaRepository<Store, UUID> {
+public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Optional<Store> findByName(String name);
 
     @Query("SELECT s FROM Store s JOIN FETCH s.brand b WHERE s.id = :id")
-    Optional<Store> findByIdWithBrand(UUID id);
+    Optional<Store> findByIdWithBrand(Long id);
 }

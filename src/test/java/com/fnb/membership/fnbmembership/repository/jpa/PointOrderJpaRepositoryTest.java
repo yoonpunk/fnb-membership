@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,70 +30,104 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class PointOrderJpaRepositoryTest {
 
+    // To use JPA's auto implementation, Declare @Autowired.
     @Autowired
     PointOrderJpaRepository sut;
 
     @Autowired
     MemberRepository memberRepository;
 
-    // These variables are used to retrieve data.
-    LocalDateTime startTime;
-    LocalDateTime endTime;
-    Member member;
-
-    // This list is used to verify retrieved data.
-    List<PointOrder> expectedPointOrders;
-
+    // This is a test to verify the results of the first retrieved page sorted by approvedAt DESC
     @Test
-    @DisplayName("This is a test to verify the results of the first retrieved page sorted by approvedAt DESC")
     void testFindByMemberIdAndTimeWithPageableVerifyingFirstPage() {
 
         // arrange
         // Called the setup method directly in the test code to explicitly show it, without using @BeforeEach.
-        init();
+        List<PointOrder> expectedPointOrders = setUpFivePointOrdersForSearchingTest();
+        Member member = memberRepository.findByPhone("01012345678").get();
+
         Pageable pageable = PageRequest.of(0, 3, Sort.by("approvedAt").descending());
+        LocalDateTime startTime = LocalDateTime.of(2023, 3, 1, 10, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(2023, 3, 1, 10, 7, 0);
 
         // act
         List<PointOrder> actual = sut.findByMemberIdAndTimeWithPageable(member.getId(), startTime, endTime, pageable);
 
         // assert
         assertThat(actual.size()).isEqualTo(3);
-        // Check descending of expectedPointOrders
-        assertThat(actual.get(0)).isEqualTo(expectedPointOrders.get(4));
-        assertThat(actual.get(1)).isEqualTo(expectedPointOrders.get(3));
+
+        // Sort expectedPointOrders by DESC and Check expectedPointOrders.
+        Collections.sort(expectedPointOrders, (o1, o2) -> o2.getApprovedAt().compareTo(o1.getApprovedAt()));
+        assertThat(actual.get(0)).isEqualTo(expectedPointOrders.get(0));
+        assertThat(actual.get(1)).isEqualTo(expectedPointOrders.get(1));
         assertThat(actual.get(2)).isEqualTo(expectedPointOrders.get(2));
     }
 
-    /*
-     * setup method.
+    /**
+     * A Setup method.
+     * Create five PointOrder objects at 2023-03-01 10:00:01 ~ 2023-03-01 10:00:06
+     * Return created five pointOrders.
      */
-    private void init() {
+    private List<PointOrder> setUpFivePointOrdersForSearchingTest() {
 
-        // Assign the time when initial data preparation started to a variable.
-        startTime = LocalDateTime.now();
+        Member member = memberRepository.save(Member.createMemberWithUuidAndBarcode(
+                "01012345678", LocalDateTime.of(2023, 3, 1, 10, 1, 0)));
 
-        member = memberRepository.save(Member.createMember("01012345678"));
+        PointOrder pointOrder1 = sut.save(
+                PointOrder.createPointOrderWithUuid(
+                        member.getId(),
+                        "MOONBUCKS",
+                        "MOONBUCKS 매탄점",
+                        PointOrderType.EARN,
+                        5000L,
+                        LocalDateTime.of(2023, 3, 1, 10, 2, 0)
+                )
+        );
 
-        expectedPointOrders = new ArrayList<PointOrder>();
+        PointOrder pointOrder2 = sut.save(
+                PointOrder.createPointOrderWithUuid(
+                        member.getId(),
+                        "MOONBUCKS",
+                        "MOONBUCKS 매탄점",
+                        PointOrderType.EARN,
+                        4000L,
+                        LocalDateTime.of(2023, 3, 1, 10, 3, 0)
+                )
+        );
 
-        PointOrder pointOrder1 = sut.save(PointOrder.createPointOrder(
-                member, "MOONBUCKS", "MOONBUCKS 매탄점", PointOrderType.EARN, 5000L));
-        PointOrder pointOrder2 = sut.save(PointOrder.createPointOrder(
-                member, "MOONBUCKS", "MOONBUCKS 매탄점", PointOrderType.EARN, 4000L));
-        PointOrder pointOrder3 = sut.save(PointOrder.createPointOrder(
-                member, "MOONBUCKS", "MOONBUCKS 매탄점", PointOrderType.EARN, 3000L));
-        PointOrder pointOrder4 = sut.save(PointOrder.createPointOrder(
-                member, "MOONBUCKS", "MOONBUCKS 매탄점", PointOrderType.EARN, 2000L));
-        PointOrder pointOrder5 = sut.save(PointOrder.createPointOrder(
-                member, "MOONBUCKS", "MOONBUCKS 매탄점", PointOrderType.EARN, 1000L));
+        PointOrder pointOrder3 = sut.save(
+                PointOrder.createPointOrderWithUuid(
+                        member.getId(),
+                        "MOONBUCKS",
+                        "MOONBUCKS 매탄점",
+                        PointOrderType.EARN,
+                        3000L,
+                        LocalDateTime.of(2023, 3, 1, 10, 4, 0)
+                )
+        );
 
-        expectedPointOrders.add(pointOrder1);
-        expectedPointOrders.add(pointOrder2);
-        expectedPointOrders.add(pointOrder3);
-        expectedPointOrders.add(pointOrder4);
-        expectedPointOrders.add(pointOrder5);
+        PointOrder pointOrder4 = sut.save(
+                PointOrder.createPointOrderWithUuid(
+                        member.getId(),
+                        "MOONBUCKS",
+                        "MOONBUCKS 매탄점",
+                        PointOrderType.EARN,
+                        2000L,
+                        LocalDateTime.of(2023, 3, 1, 10, 5, 0)
+                )
+        );
 
-        // Assign the time when initial data preparation was completed to a variable.
-        endTime = LocalDateTime.now();
+        PointOrder pointOrder5 = sut.save(
+                PointOrder.createPointOrderWithUuid(
+                        member.getId(),
+                        "MOONBUCKS",
+                        "MOONBUCKS 매탄점",
+                        PointOrderType.EARN,
+                        1000L,
+                        LocalDateTime.of(2023, 3, 1, 10, 6, 0)
+                )
+        );
+
+        return new ArrayList<PointOrder>(Arrays.asList(pointOrder1, pointOrder2, pointOrder3, pointOrder4, pointOrder5));
     }
 }

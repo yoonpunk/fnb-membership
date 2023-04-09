@@ -15,7 +15,7 @@ public class UsePointOrderByPhone {
     @Schema(name = "UsePointOrderByPhoneRequest")
     public static class Request {
         private String phone;
-        private String storeId;
+        private Long storeId;
         private Long pointAmount;
     }
 

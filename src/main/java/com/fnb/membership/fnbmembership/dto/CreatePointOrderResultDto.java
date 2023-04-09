@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CreatePointOrderResultDto {
 
-    public String pointOrderId;
+    public Long pointOrderId;
     public PointOrderType pointOrderType;
     public Long requestedPointAmount;
     public LocalDateTime approvedAt;

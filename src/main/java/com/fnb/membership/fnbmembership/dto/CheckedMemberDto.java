@@ -11,7 +11,7 @@ import lombok.Data;
 @Builder
 public class CheckedMemberDto {
 
-    private String id;
+    private Long id;
     private String phone;
     private String barcode;
 }

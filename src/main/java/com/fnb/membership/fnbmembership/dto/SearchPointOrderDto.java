@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class SearchPointOrderDto {
 
-    private String memberId;
+    private Long memberId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private int page;

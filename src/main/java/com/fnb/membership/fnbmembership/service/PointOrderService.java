@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,7 +57,7 @@ public class PointOrderService {
                 " requestedPointAmount=" + earnPointResultDto.getRequestedAmount());
 
         // Searching the member.
-        Optional<Member> searchedMember = memberRepository.findById(UUID.fromString(checkedMember.getId()));
+        Optional<Member> searchedMember = memberRepository.findById(checkedMember.getId());
 
         if (searchedMember.isEmpty()) {
             log.error("member is invalid. memberId=" + checkedMember.getId());
@@ -64,14 +65,14 @@ public class PointOrderService {
         }
 
         // Searching the store.
-        Optional<Store> searchedStore = storeRepository.findByIdWithBrand(UUID.fromString(checkedStore.getStoreId()));
+        Optional<Store> searchedStore = storeRepository.findByIdWithBrand(checkedStore.getStoreId());
 
         if (searchedStore.isEmpty()) {
             log.error("store is invalid. storeId=" + checkedStore.getStoreId());
             throw new NoSuchStoreException();
         }
         // Searching the point.
-        Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(earnPointResultDto.getPointId()));
+        Optional<Point> searchedPoint = pointRepository.findById(earnPointResultDto.getPointId());
 
         if (searchedPoint.isEmpty()) {
             log.error("point is invaild. pointId=" + earnPointResultDto.getPointId());
@@ -84,19 +85,20 @@ public class PointOrderService {
             throw new IllegalArgumentException("Failed Point result.");
         }
 
-        PointOrder pointOrder = PointOrder.createPointOrder(
-                searchedMember.get(),
+        PointOrder pointOrder = PointOrder.createPointOrderWithUuid(
+                searchedMember.get().getId(),
                 searchedStore.get().getBrand().getName(),
                 searchedStore.get().getName(),
                 PointOrderType.EARN,
-                earnPointResultDto.getRequestedAmount()
+                earnPointResultDto.getRequestedAmount(),
+                LocalDateTime.now()
         );
 
         pointOrder = pointOrderRepository.save(pointOrder);
         log.info("createEarnPointOrder completed. pointOrderId=" + pointOrder.getId().toString());
 
         CreatePointOrderResultDto createPointOrderResultDto = CreatePointOrderResultDto.builder()
-                .pointOrderId(pointOrder.getId().toString())
+                .pointOrderId(pointOrder.getId())
                 .pointOrderType(PointOrderType.EARN)
                 .requestedPointAmount(pointOrder.getRequestedPointAmount())
                 .approvedAt(pointOrder.getApprovedAt())
@@ -130,7 +132,7 @@ public class PointOrderService {
                 " requestedPointAmount=" + usePointResultDto.getRequestedAmount());
 
         // Searching the member.
-        Optional<Member> searchedMember = memberRepository.findById(UUID.fromString(checkedMember.getId()));
+        Optional<Member> searchedMember = memberRepository.findById(checkedMember.getId());
 
         if (searchedMember.isEmpty()) {
             log.error("member is invalid. memberId=" + checkedMember.getId());
@@ -138,7 +140,7 @@ public class PointOrderService {
         }
 
         // Searching the store.
-        Optional<Store> searchedStore = storeRepository.findById(UUID.fromString(checkedStore.getStoreId()));
+        Optional<Store> searchedStore = storeRepository.findById(checkedStore.getStoreId());
 
         if (searchedStore.isEmpty()) {
             log.error("store is invalid. storeId=" + checkedStore.getStoreId());
@@ -146,7 +148,7 @@ public class PointOrderService {
         }
 
         // Searching the point
-        Optional<Point> searchedPoint = pointRepository.findById(UUID.fromString(usePointResultDto.getPointId()));
+        Optional<Point> searchedPoint = pointRepository.findById(usePointResultDto.getPointId());
 
         if (searchedPoint.isEmpty()) {
             log.error("point is invaild. pointId=" + usePointResultDto.getPointId());
@@ -159,19 +161,20 @@ public class PointOrderService {
             throw new IllegalArgumentException("Failed Point result.");
         }
 
-        PointOrder pointOrder = PointOrder.createPointOrder(
-                searchedMember.get(),
+        PointOrder pointOrder = PointOrder.createPointOrderWithUuid(
+                searchedMember.get().getId(),
                 searchedStore.get().getBrand().getName(),
                 searchedStore.get().getName(),
                 PointOrderType.USE,
-                usePointResultDto.getRequestedAmount()
+                usePointResultDto.getRequestedAmount(),
+                LocalDateTime.now()
         );
 
         pointOrder = pointOrderRepository.save(pointOrder);
         log.info("createUsePointOrder completed. pointOrderId=" + pointOrder.getId().toString());
 
         CreatePointOrderResultDto createPointOrderResultDto = CreatePointOrderResultDto.builder()
-                .pointOrderId(pointOrder.getId().toString())
+                .pointOrderId(pointOrder.getId())
                 .pointOrderType(PointOrderType.USE)
                 .requestedPointAmount(pointOrder.getRequestedPointAmount())
                 .approvedAt(pointOrder.getApprovedAt())
@@ -194,8 +197,7 @@ public class PointOrderService {
                 " startTime=" + searchPointOrder.getStartTime() +
                 " endTime=" + searchPointOrder.getStartTime());
 
-        List<PointOrder> pointOrders = pointOrderRepository.findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(
-                UUID.fromString(searchPointOrder.getMemberId()),
+        List<PointOrder> pointOrders = pointOrderRepository.findByMemberIdAndTimeOrderByApprovedAtDescWithPaging(searchPointOrder.getMemberId(),
                 searchPointOrder.getStartTime(),
                 searchPointOrder.getEndTime(),
                 searchPointOrder.getPage(),

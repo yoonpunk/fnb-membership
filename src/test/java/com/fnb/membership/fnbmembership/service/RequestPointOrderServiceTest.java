@@ -7,7 +7,6 @@ import com.fnb.membership.fnbmembership.domain.Store;
 import com.fnb.membership.fnbmembership.dto.RequestEarnPointOrderResultDto;
 import com.fnb.membership.fnbmembership.dto.RequestUsePointOrderResultDto;
 import com.fnb.membership.fnbmembership.repository.*;
-import com.fnb.membership.fnbmembership.repository.jpa.PointOrderJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.*;
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -65,22 +66,22 @@ class RequestPointOrderServiceTest {
         pointOrderService = new PointOrderService(pointOrderRepository, memberRepository, pointRepository, storeRepository);
         requestPointOrderService = new RequestPointOrderService(memberService, storeService, pointService, pointOrderService);
 
-        existMember = Member.createMember("01012345678");
+        existMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
         memberRepository.save(existMember);
 
-        seoulBaguette = Brand.createBrand("SEOULBAGUETTE");
+        seoulBaguette = Brand.createBrandWithUuid("SEOULBAGUETTE", LocalDateTime.now());
         brandRepository.save(seoulBaguette);
 
-        seoulBaguetteSinsa = Store.createStore("SEOULBAGUETTE 신사점", seoulBaguette);
+        seoulBaguetteSinsa = Store.createStoreWithUuid("SEOULBAGUETTE 신사점", seoulBaguette, LocalDateTime.now());
         storeRepository.save(seoulBaguetteSinsa);
 
-        burgerQueen = Brand.createBrand("BURGERQUEEN");
+        burgerQueen = Brand.createBrandWithUuid("BURGERQUEEN", LocalDateTime.now());
         brandRepository.save(burgerQueen);
 
-        burgerQueenPangyo = Store.createStore("BURGERQUEEN 판교점", burgerQueen);
+        burgerQueenPangyo = Store.createStoreWithUuid("BURGERQUEEN 판교점", burgerQueen, LocalDateTime.now());
         storeRepository.save(burgerQueenPangyo);
 
-        Point point = Point.createPoint(existMember, burgerQueen, 15000l);
+        Point point = Point.createPointWithUuid(existMember, burgerQueen, 15000l, LocalDateTime.now());
         pointRepository.save(point);
 
     }
@@ -93,15 +94,15 @@ class RequestPointOrderServiceTest {
 
         // when
         // 2번 적립, 최초 포인트 적립, 기존 포인트에 누적으로 적립
-        requestPointOrderService.createEarnPointOrderByBarcode(barcode, 5000l, seoulBaguetteSinsa.getId().toString());
+        requestPointOrderService.createEarnPointOrderByBarcode(barcode, 5000l, seoulBaguetteSinsa.getId());
         RequestEarnPointOrderResultDto result = requestPointOrderService.createEarnPointOrderByBarcode(
-                barcode, 5000l, seoulBaguetteSinsa.getId().toString());
+                barcode, 5000l, seoulBaguetteSinsa.getId());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(seoulBaguette.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(seoulBaguetteSinsa.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(seoulBaguette.getId());
+        assertThat(result.getStoreId()).isEqualTo(seoulBaguetteSinsa.getId());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }
@@ -114,15 +115,15 @@ class RequestPointOrderServiceTest {
 
         // when
         // 2번 적립, 최초 포인트 적립, 기존 포인트에 누적으로 적립
-        requestPointOrderService.createEarnPointOrderByPhone(phone, 5000l, seoulBaguetteSinsa.getId().toString());
+        requestPointOrderService.createEarnPointOrderByPhone(phone, 5000l, seoulBaguetteSinsa.getId());
         RequestEarnPointOrderResultDto result = requestPointOrderService.createEarnPointOrderByPhone(
-                phone, 5000l, seoulBaguetteSinsa.getId().toString());
+                phone, 5000l, seoulBaguetteSinsa.getId());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(seoulBaguette.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(seoulBaguetteSinsa.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(seoulBaguette.getId());
+        assertThat(result.getStoreId()).isEqualTo(seoulBaguetteSinsa.getId());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }
@@ -134,13 +135,13 @@ class RequestPointOrderServiceTest {
 
         // when
         RequestUsePointOrderResultDto result = requestPointOrderService.createUsePointOrderByBarcode(
-                barcode, 5000l, burgerQueenPangyo.getId().toString());
+                barcode, 5000l, burgerQueenPangyo.getId());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(burgerQueen.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(burgerQueenPangyo.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(burgerQueen.getId());
+        assertThat(result.getStoreId()).isEqualTo(burgerQueenPangyo.getId());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }
@@ -152,13 +153,13 @@ class RequestPointOrderServiceTest {
 
         // when
         RequestUsePointOrderResultDto result = requestPointOrderService.createUsePointOrderByPhone(
-                phone, 5000l, burgerQueenPangyo.getId().toString());
+                phone, 5000l, burgerQueenPangyo.getId());
 
         // then
         assertThat(result.getBarcode()).isEqualTo(existMember.getBarcode());
         assertThat(result.getPhone()).isEqualTo(existMember.getPhone());
-        assertThat(result.getBrandId()).isEqualTo(burgerQueen.getId().toString());
-        assertThat(result.getStoreId()).isEqualTo(burgerQueenPangyo.getId().toString());
+        assertThat(result.getBrandId()).isEqualTo(burgerQueen.getId());
+        assertThat(result.getStoreId()).isEqualTo(burgerQueenPangyo.getId());
         assertThat(result.getRequestedPointAmount()).isEqualTo(5000l);
         assertThat(result.getRemainedPointAmount()).isEqualTo(10000l);
     }

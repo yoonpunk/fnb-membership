@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * 점포 정보를 관리하는 서비스
+ * A service to manage store information.
  */
 @Service
 @Transactional
@@ -24,21 +24,21 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
 
+
     /**
-     * 점포 정보가 존재하는지 확인하는 메서드, 점포의 ID를 통해 점포 정보를 조회
-     * 점포 정보가 존재할 경우, 점포 정보를 CheckedStoreDto에 담아 리턴
-     * 존재하지 않을 경우, NoSuchStoreException 예외 발생
+     * A method for checking the store using its ID.
      * @param storeId
-     * @return CheckedStoreDto
+     * @return
+     * @throws NoSuchStoreException
      */
-    public CheckedStoreDto checkStore(String storeId) throws NoSuchStoreException {
+    public CheckedStoreDto checkStore(Long storeId) throws NoSuchStoreException {
 
         log.info("checkStore requested. storeId=" + storeId);
 
-        // 점포가 있는지 브랜드와 함께 조회
-        Optional<Store> store = storeRepository.findById(UUID.fromString(storeId));
+        // Finding the store with brand.
+        Optional<Store> store = storeRepository.findById(storeId);
 
-        // 점포가 존재한다면, 점포 정보 리턴
+        // If the store already exists, return it.
         if (store.isPresent()) {
             Store validStore = store.get();
             Brand validBrand = validStore.getBrand();
@@ -46,13 +46,13 @@ public class StoreService {
             log.info("store is valid. storeId= " + storeId + " brandId=" + validBrand.getId());
 
             return CheckedStoreDto.builder()
-                    .storeId(validStore.getId().toString())
+                    .storeId(validStore.getId())
                     .storeName(validStore.getName())
-                    .brandId(validBrand.getId().toString())
+                    .brandId(validBrand.getId())
                     .brandName(validBrand.getName())
                     .build();
 
-        } else { // 점포가 존재하지 않다면, NoSuchStoreException 발생
+        } else { // If the store doesn't existm, throw a NoSuchStoreException.
 
             log.error("invalid storeId. storeId=" + storeId);
             throw new NoSuchStoreException();

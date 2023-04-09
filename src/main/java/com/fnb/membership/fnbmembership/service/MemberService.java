@@ -1,19 +1,20 @@
 package com.fnb.membership.fnbmembership.service;
 
-import com.fnb.membership.fnbmembership.exception.MemberJoinFailedException;
-import com.fnb.membership.fnbmembership.exception.NoSuchMemberException;
 import com.fnb.membership.fnbmembership.domain.Member;
 import com.fnb.membership.fnbmembership.dto.CheckedMemberDto;
+import com.fnb.membership.fnbmembership.exception.MemberJoinFailedException;
+import com.fnb.membership.fnbmembership.exception.NoSuchMemberException;
 import com.fnb.membership.fnbmembership.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * 회원 정보를 관리하기 위한 서비스
+ * A service to manage members.
  */
 @Service
 @RequiredArgsConstructor
@@ -24,13 +25,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     /**
-     * 회원 가입 요청 API
-     * 회원 전화번호를 받아 회원 가입을 진행
-     * 회원이 없을 경우, 가입 진행 후 회원 정보를 전달
-     * 회원이 있을 경우, 조회된 회원 정보를 전달
-     * 회원 생성 실패 시, 예외 발생 처리
+     * A method to create a new member using their phone number.
+     * If the member doesn't exist, create a new member and return it.
+     * If the member already exists, return the existing member.
      * @param phone
-     * @return CheckedMemberDto
+     * @return
+     * @throws MemberJoinFailedException
      */
     @Transactional(readOnly = false)
     public CheckedMemberDto join(String phone) throws MemberJoinFailedException {
@@ -39,27 +39,27 @@ public class MemberService {
 
         Optional<Member> member = memberRepository.findByPhone(phone);
 
-        // 기존 회원이 있을 경우, 조회 된 회원 정보를 리턴
+        // If the member already exists, return the existing member.
         if (member.isPresent()) {
             Member existMember = member.get();
 
             log.info("member already exists. phone=" + phone);
 
             return CheckedMemberDto.builder()
-                    .id(existMember.getId().toString())
+                    .id(existMember.getId())
                     .phone(existMember.getPhone())
                     .barcode(existMember.getBarcode())
                     .build();
         }
 
-        // 신규 회원일 경우, 회원 가입
+        // If the member doesn't exist, create a new member and return it.
         try {
-            Member newMember = Member.createMember(phone);
+            Member newMember = Member.createMemberWithUuidAndBarcode(phone, LocalDateTime.now());
             newMember = memberRepository.save(newMember);
 
             log.info("creating new member is completed. phone=" + newMember.getPhone());
             return CheckedMemberDto.builder()
-                    .id(newMember.getId().toString())
+                    .id(newMember.getId())
                     .phone(newMember.getPhone())
                     .barcode(newMember.getBarcode())
                     .build();
@@ -71,63 +71,59 @@ public class MemberService {
     }
 
     /**
-     * 회원 정보 확인 요청 API
-     * 회원 전화번호를 받아 존재하는 회원인지 확인
-     * 성공 시, 요청된 회원 전화번호와 생성된 바코드 정보를 전달
-     * 실패 시, NoSuchMemberException 예외 발생
+     * A method to check whether a member exists using their phone number.
      * @param phone
-     * @return CheckedMemberDto
+     * @return
+     * @throws NoSuchMemberException
      */
     public CheckedMemberDto checkMemberByPhone(String phone) throws NoSuchMemberException {
 
         log.info("checkMemberByPhone is requested. phone=" + phone);
 
-        // 회원 조회
+        // Searching the member by phone number.
         Optional<Member> member = memberRepository.findByPhone(phone);
 
-        // 회원 존재 시, 회원 정보 리턴
+        // If the member already exists, return the existing member.
         if (member.isPresent()) {
             Member existMember = member.get();
 
             log.info("member is valid. phone=" + phone);
 
             return CheckedMemberDto.builder()
-                            .id(existMember.getId().toString())
+                            .id(existMember.getId())
                             .phone(existMember.getPhone())
                             .barcode(existMember.getBarcode())
                             .build();
-        } else { // 없을 경우, 예외 발생
+        } else { // If the member doesn't exist, throw a NoSuchMemberException.
             log.error("member is invalid. phone=" + phone);
             throw new NoSuchMemberException();
         }
     };
 
     /**
-     * 회원 정보 확인 요청 API
-     * 회원 바코드를 받아 존재하는 회원인지 확인
-     * 성공 시, 요청된 회원 전화번호와 생성된 바코드 정보를 전달
-     * 실패 시, NoSuchMemberException 예외 발생
+     * A method to check whether a member exists using their barcode number.
      * @param barcode
-     * @return CheckedMemberDto
+     * @return
+     * @throws NoSuchMemberException
      */
     public CheckedMemberDto checkMemberByBarcode(String barcode) throws NoSuchMemberException {
 
         log.info("checkMemberByBarcode is requested. barcode=" + barcode);
 
-        // 회원 조회
+        // Searching the member by barcode number.
         Optional<Member> member = memberRepository.findByBarcode(barcode);
 
-        // 회원 존재 시, 회원 정보 리턴
+        // If the member already exists, return it.
         if (member.isPresent()) {
             Member existMember = member.get();
 
             log.info("member is valid. barcode=" + barcode);
             return CheckedMemberDto.builder()
-                            .id(existMember.getId().toString())
+                            .id(existMember.getId())
                             .phone(existMember.getPhone())
                             .barcode(existMember.getBarcode())
                             .build();
-        } else { // 없을 경우, 예외 발생
+        } else { // If the member doesn't exist, throw a NoSuchMemberException.
             log.error("member is invalid. barcode=" + barcode);
             throw new NoSuchMemberException();
         }

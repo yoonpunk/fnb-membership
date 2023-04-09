@@ -46,16 +46,16 @@ class PointOrderServiceTest {
 
         pointOrderService = new PointOrderService(pointOrderRepository, memberRepository, pointRepository, storeRepository);
 
-        member = Member.createMember("01012345678");
+        member = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
         memberRepository.save(member);
 
-        moonbucks = Brand.createBrand("MOONBUCKS");
+        moonbucks = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
         brandRepository.save(moonbucks);
 
-        moonbucksMetan = Store.createStore("MOONBUCKS 매탄점", moonbucks);
+        moonbucksMetan = Store.createStoreWithUuid("MOONBUCKS 매탄점", moonbucks, LocalDateTime.now());
         storeRepository.save(moonbucksMetan);
 
-        point = Point.createPoint(member, moonbucks, 5000);
+        point = Point.createPointWithUuid(member, moonbucks, 5000L, LocalDateTime.now());
         pointRepository.save(point);
 
     }
@@ -65,25 +65,25 @@ class PointOrderServiceTest {
 
         // given
         CheckedMemberDto checkedMemberDto = CheckedMemberDto.builder()
-                .id(member.getId().toString())
+                .id(member.getId())
                 .phone(member.getPhone())
                 .barcode(member.getBarcode())
                 .build();
 
         CheckedStoreDto checkedStoreDto = CheckedStoreDto.builder()
                 .brandName(moonbucks.getName())
-                .brandId(moonbucks.getId().toString())
+                .brandId(moonbucks.getId())
                 .storeName(moonbucksMetan.getName())
-                .storeId(moonbucksMetan.getId().toString())
+                .storeId(moonbucksMetan.getId())
                 .build();
 
         EarnPointResultDto earnPointResultDto = EarnPointResultDto.builder()
-                .pointId(point.getId().toString())
+                .pointId(point.getId())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(3000l)
-                .brandId(moonbucks.getId().toString())
-                .memberId(member.getId().toString())
-                .pointId(point.getId().toString())
+                .brandId(moonbucks.getId())
+                .memberId(member.getId())
+                .pointId(point.getId())
                 .isSuccess(true)
                 .build();
 
@@ -92,16 +92,16 @@ class PointOrderServiceTest {
                 checkedMemberDto, checkedStoreDto, earnPointResultDto);
 
         // then
-        Optional<PointOrder> result = pointOrderRepository.findById(UUID.fromString(createPointOrderResultDto.getPointOrderId()));
+        Optional<PointOrder> result = pointOrderRepository.findById(createPointOrderResultDto.getPointOrderId());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getMember().getId()).isEqualTo(member.getId());
+        assertThat(result.get().getMemberId()).isEqualTo(member.getId());
         assertThat(result.get().getBrandName()).isEqualTo(moonbucks.getName());
         assertThat(result.get().getStoreName()).isEqualTo(moonbucksMetan.getName());
         assertThat(result.get().getRequestedPointAmount()).isEqualTo(3000l);
         assertThat(result.get().getType()).isEqualTo(PointOrderType.EARN);
 
-        assertThat(createPointOrderResultDto.getPointOrderId()).isEqualTo(result.get().getId().toString());
+        assertThat(createPointOrderResultDto.getPointOrderId()).isEqualTo(result.get().getId());
         assertThat(createPointOrderResultDto.getRequestedPointAmount()).isEqualTo(3000l);
     }
 
@@ -110,25 +110,25 @@ class PointOrderServiceTest {
 
         // given
         CheckedMemberDto checkedMemberDto = CheckedMemberDto.builder()
-                .id(member.getId().toString())
+                .id(member.getId())
                 .phone(member.getPhone())
                 .barcode(member.getBarcode())
                 .build();
 
         CheckedStoreDto checkedStoreDto = CheckedStoreDto.builder()
                 .brandName(moonbucks.getName())
-                .brandId(moonbucks.getId().toString())
+                .brandId(moonbucks.getId())
                 .storeName(moonbucksMetan.getName())
-                .storeId(moonbucksMetan.getId().toString())
+                .storeId(moonbucksMetan.getId())
                 .build();
 
         UsePointResultDto usePointResultDto = UsePointResultDto.builder()
-                .pointId(point.getId().toString())
+                .pointId(point.getId())
                 .remainedAmount(point.getAmount())
                 .requestedAmount(2000l)
-                .brandId(moonbucks.getId().toString())
-                .memberId(member.getId().toString())
-                .pointId(point.getId().toString())
+                .brandId(moonbucks.getId())
+                .memberId(member.getId())
+                .pointId(point.getId())
                 .isSuccess(true)
                 .build();
 
@@ -137,16 +137,16 @@ class PointOrderServiceTest {
                 checkedMemberDto, checkedStoreDto, usePointResultDto);
 
         // then
-        Optional<PointOrder> result = pointOrderRepository.findById(UUID.fromString(createPointOrderResultDto.getPointOrderId()));
+        Optional<PointOrder> result = pointOrderRepository.findById(createPointOrderResultDto.getPointOrderId());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getMember().getId()).isEqualTo(member.getId());
+        assertThat(result.get().getMemberId()).isEqualTo(member.getId());
         assertThat(result.get().getBrandName()).isEqualTo(moonbucks.getName());
         assertThat(result.get().getStoreName()).isEqualTo(moonbucksMetan.getName());
         assertThat(result.get().getRequestedPointAmount()).isEqualTo(2000l);
         assertThat(result.get().getType()).isEqualTo(PointOrderType.USE);
 
-        assertThat(createPointOrderResultDto.getPointOrderId()).isEqualTo(result.get().getId().toString());
+        assertThat(createPointOrderResultDto.getPointOrderId()).isEqualTo(result.get().getId());
         assertThat(createPointOrderResultDto.getRequestedPointAmount()).isEqualTo(2000l);
     }
 
@@ -154,32 +154,32 @@ class PointOrderServiceTest {
     public void searchPointOrder_성공() {
 
         // given
-        PointOrder pointOrder1 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 5000L);
+        PointOrder pointOrder1 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 5000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder1);
         LocalDateTime startTime = LocalDateTime.now();
-        PointOrder pointOrder2 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder2 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder2);
-        PointOrder pointOrder3 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 2000L);
+        PointOrder pointOrder3 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 2000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder3);
-        PointOrder pointOrder4 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 1000L);
+        PointOrder pointOrder4 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 1000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder4);
-        PointOrder pointOrder5 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder5 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder5);
-        PointOrder pointOrder6 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 7000L);
+        PointOrder pointOrder6 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 7000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder6);
-        PointOrder pointOrder7 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder7 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder7);
-        PointOrder pointOrder8 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 500L);
+        PointOrder pointOrder8 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.USE, 500L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder8);
-        PointOrder pointOrder9 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 4000L);
+        PointOrder pointOrder9 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 4000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder9);
         LocalDateTime endTime = LocalDateTime.now();
-        PointOrder pointOrder10 = PointOrder.createPointOrder(member, moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L);
+        PointOrder pointOrder10 = PointOrder.createPointOrderWithUuid(member.getId(), moonbucks.getName(), moonbucksMetan.getName(), PointOrderType.EARN, 3000L, LocalDateTime.now());
         pointOrderRepository.save(pointOrder10);
 
         // when
         SearchPointOrderDto searchPointOrderDto1 = SearchPointOrderDto.builder()
-                .memberId(member.getId().toString())
+                .memberId(member.getId())
                 .startTime(startTime)
                 .endTime(endTime)
                 .page(0)
@@ -189,7 +189,7 @@ class PointOrderServiceTest {
         List<SearchedPointOrderDto> searchedPointOrderDtos1 = pointOrderService.searchPointOrder(searchPointOrderDto1);
 
         SearchPointOrderDto searchPointOrderDto2 = SearchPointOrderDto.builder()
-                .memberId(member.getId().toString())
+                .memberId(member.getId())
                 .startTime(startTime)
                 .endTime(endTime)
                 .page(1)

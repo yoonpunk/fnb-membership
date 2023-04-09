@@ -14,7 +14,7 @@ public class RequestEarnPointOrderResultDto {
     String phone;
     Long requestedPointAmount;
     Long remainedPointAmount;
-    String storeId;
-    String brandId;
+    Long storeId;
+    Long brandId;
 
 }

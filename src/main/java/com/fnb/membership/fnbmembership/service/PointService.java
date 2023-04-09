@@ -19,11 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.OptimisticLockException;
+import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
- * 포인트 정보를 관리하기 위한 서비스
+ * A service to manage point information.
  */
 @Service
 @RequiredArgsConstructor
@@ -35,14 +35,12 @@ public class PointService {
     private final MemberRepository memberRepository;
     private final BrandRepository brandRepository;
 
-
     /**
-     * 포인트 적립 요청
-     * 포인트 적립 성공 시, 잔액 포인트 정보 제공
-     * 해당 브랜드에 최초 적립 성공 시, 포인트 생성
-     * 부적합 회원 정보 시, NoSuchMemberException 발생
-     * 부적합 브랜드 정보 시, NoSuchBrandException 발생
-     * 동시성 문제 발생 시, 적립 하지 않고 종료
+     * A method for requesting to earn point.
+     * Return the point information if the point earning process is successful.
+     * If the member is invalid, throw NoSuchMemberException.
+     * If the brand is invalid, throw NoSuchMemberException.
+     * If getting the optimistic lock fails, then do nothing.
      * @param earnPointDto
      * @return
      */
@@ -51,38 +49,36 @@ public class PointService {
         log.info("earnPoint requested. earnPointDto=" + earnPointDto.toString());
 
         try {
-            // 적립된 포인트가 있는지 확인, 낙관적락을 걸어 조회
-            Optional<Point> point = pointRepository.findByMemberIdAndBrandIdWithOptimisticLock(
-                    UUID.fromString(earnPointDto.getMemberId()), UUID.fromString(earnPointDto.getBrandId()));
-
+            // Check the exist points while obtaining the optimistic lock.
+            Optional<Point> point = pointRepository.findByMemberIdAndBrandIdWithOptimisticLock(earnPointDto.getMemberId(), earnPointDto.getBrandId());
             Point resultPoint;
 
-            // 적립된 포인트가 없을 경우, 포인트 최초 생성
+            // Creates a new point, if point doesn't exist.
             if (point.isEmpty()) {
 
-                // 회원 조회
-                Optional<Member> member = memberRepository.findById(UUID.fromString(earnPointDto.getMemberId()));
+                // Find the member.
+                Optional<Member> member = memberRepository.findById(earnPointDto.getMemberId());
 
                 if (member.isEmpty()) {
                     log.error("invalid memberId requested. memberId=" + earnPointDto.getMemberId());
                     throw new NoSuchMemberException();
                 }
 
-                // 브랜드 조회
-                Optional<Brand> brand = brandRepository.findById(UUID.fromString(earnPointDto.getBrandId()));
+                // Find the brand.
+                Optional<Brand> brand = brandRepository.findById(earnPointDto.getBrandId());
 
                 if (member.isEmpty()) {
                     log.error("invalid brandId requested. brandId=" + earnPointDto.getBrandId());
                     throw new NoSuchBrandException();
                 }
 
-                resultPoint = Point.createPoint(member.get(), brand.get(), earnPointDto.getAmount());
+                resultPoint = Point.createPointWithUuid(member.get(), brand.get(), earnPointDto.getAmount(), LocalDateTime.now());
                 resultPoint = pointRepository.save(resultPoint);
 
                 EarnPointResultDto result = EarnPointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
                         .brandId(earnPointDto.getBrandId())
-                        .pointId(resultPoint.getId().toString())
+                        .pointId(resultPoint.getId())
                         .isSuccess(true)
                         .requestedAmount(earnPointDto.getAmount())
                         .remainedAmount(resultPoint.getAmount())
@@ -91,7 +87,7 @@ public class PointService {
 
                 return result;
 
-            } else { // 적립된 포인트가 있을 경우, 포인트 적립
+            } else { // If points already exist, earns points.
                 Point validPoint = point.get();
                 validPoint.earnPoint(earnPointDto.getAmount());
                 pointRepository.save(validPoint);
@@ -99,7 +95,7 @@ public class PointService {
                 EarnPointResultDto result = EarnPointResultDto.builder()
                         .memberId(earnPointDto.getMemberId())
                         .brandId(earnPointDto.getBrandId())
-                        .pointId(validPoint.getId().toString())
+                        .pointId(validPoint.getId())
                         .isSuccess(true)
                         .requestedAmount(earnPointDto.getAmount())
                         .remainedAmount(validPoint.getAmount())
@@ -126,22 +122,23 @@ public class PointService {
     }
 
     /**
-     * 포인트 사용 요청
-     * 적립된 포인트 사용 성공 시, 잔액 포인트 정보 제공
-     * 적립된 포인트가 존재하지 않거나 부족할 경우에는 NotEnoughPointException 발생
+     * A method for requesting to use point.
+     * Return the point information if the point using process is successful.
+     * If the point is not sufficient, throw NotEoughPointException.
      * @param usePointDto
      * @return
+     * @throws NotEnoughPointException
      */
     public UsePointResultDto usePoint(UsePointDto usePointDto) throws NotEnoughPointException {
 
         log.info("usePoint requested. usePointDto=" + usePointDto.toString());
 
         try {
-            // 적립된 포인트가 있는 지 확인, 낙관적락을 걸어 조회
+            // Checking the earned points while obtaining optimistic lock.
             Optional<Point> point = pointRepository.findByMemberIdAndBrandIdWithOptimisticLock(
-                    UUID.fromString(usePointDto.getMemberId()), UUID.fromString(usePointDto.getBrandId()));
+                    usePointDto.getMemberId(), usePointDto.getBrandId());
 
-            // 적립된 포인트가 없다면 예외처리
+            // If Point doesn't exist, throw NotEnoughPointException.
             if (point.isEmpty()) {
                 log.error("earned point is not exist.");
                 throw new NotEnoughPointException();
@@ -149,21 +146,21 @@ public class PointService {
 
             Point validPoint = point.get();
 
-            // 적립된 포인트가 존재할 때, 사용 요청 된 포인트보다 적립금액이 작을 경우 예외처리
+            // If Point already exist but not sufficient, throw NotEnoughPointException.
             if (!validPoint.isEnoughToUse(usePointDto.getAmount())) {
                 log.error("earned point is not enough.");
                 throw new NotEnoughPointException();
             }
 
-            // 포인트 사용
+            // Use points.
             validPoint.usePoint(usePointDto.getAmount());
             pointRepository.save(validPoint);
 
             log.info("use point completed. usePointDto=" + usePointDto.toString());
             return UsePointResultDto.builder()
-                    .memberId(validPoint.getMember().getId().toString())
-                    .brandId(validPoint.getBrand().getId().toString())
-                    .pointId(validPoint.getId().toString())
+                    .memberId(validPoint.getMember().getId())
+                    .brandId(validPoint.getBrand().getId())
+                    .pointId(validPoint.getId())
                     .isSuccess(true)
                     .requestedAmount(usePointDto.getAmount())
                     .remainedAmount(validPoint.getAmount())

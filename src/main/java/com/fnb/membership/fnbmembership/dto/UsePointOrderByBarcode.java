@@ -15,7 +15,7 @@ public class UsePointOrderByBarcode {
     @Schema(name = "EarnPointOrderByBarcodeRequest")
     public static class Request {
         private String barcode;
-        private String storeId;
+        private Long storeId;
         private Long pointAmount;
     }
 

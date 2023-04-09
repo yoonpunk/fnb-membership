@@ -11,9 +11,9 @@ import lombok.Data;
 @Builder
 public class EarnPointResultDto {
 
-    private String brandId;
-    private String memberId;
-    private String pointId;
+    private Long brandId;
+    private Long memberId;
+    private Long pointId;
     private boolean isSuccess;
     private Long requestedAmount;
     private Long remainedAmount;

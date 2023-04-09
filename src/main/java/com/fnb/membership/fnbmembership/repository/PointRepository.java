@@ -15,7 +15,7 @@ import java.util.UUID;
  * Point Entity Repository
  */
 @Repository
-public interface PointRepository extends JpaRepository<Point, UUID> {
+public interface PointRepository extends JpaRepository<Point, Long> {
 
     @Lock(LockModeType.OPTIMISTIC)
     @Query(
@@ -26,5 +26,5 @@ public interface PointRepository extends JpaRepository<Point, UUID> {
             "WHERE m.id = :memberId " +
             "AND b.id = :brandId"
     )
-    Optional<Point> findByMemberIdAndBrandIdWithOptimisticLock(UUID memberId, UUID brandId);
+    Optional<Point> findByMemberIdAndBrandIdWithOptimisticLock(Long memberId, Long brandId);
 }

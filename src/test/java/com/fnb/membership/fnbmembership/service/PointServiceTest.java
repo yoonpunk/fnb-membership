@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class PointServiceTest {
 
-    private PointService pointService;
+    private PointService sut;
 
     @Autowired
     private PointRepository pointRepository;
@@ -41,138 +42,133 @@ class PointServiceTest {
     @Autowired
     private BrandRepository brandRepository;
 
-    private Member existMember;
-    private Brand existBrand;
-
     @BeforeEach
-    void init() {
-        pointService = new PointService(pointRepository, memberRepository, brandRepository);
-
-        existMember = Member.createMember("01012345678");
-        memberRepository.save(existMember);
-
-        existBrand = Brand.createBrand("MOONBUCKS");
-        brandRepository.save(existBrand);
-
-        Point point = Point.createPoint(existMember, existBrand, 5000);
-        pointRepository.save(point);
+    void setUpSut() {
+        sut = new PointService(pointRepository, memberRepository, brandRepository);
     }
 
     @Test
-    void earnPoint_적립_최초_1회_성공() {
+    void testEarnPointFirstTime() {
 
-        // given
-        Brand newBrand = Brand.createBrand("BURGERQUEEN");
-        brandRepository.save(newBrand);
+        // arrange
+        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
 
-        // 가입된 회원, 최초 적립하는 브랜드
+        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        expectedBrand = brandRepository.save(expectedBrand);
+
+        // A registered member
+        // The first brand for which points were earned.
         EarnPointDto earnPointDto = EarnPointDto.builder()
-                .memberId(existMember.getId().toString())
-                .brandId(newBrand.getId().toString())
-                .amount(5000l)
+                .memberId(expectedMember.getId())
+                .brandId(expectedBrand.getId())
+                .amount(5000L)
                 .build();
 
-        // when
-        EarnPointResultDto earnPointResultDto = pointService.earnPoint(earnPointDto);
+        // act
+        EarnPointResultDto earnPointResultDto = sut.earnPoint(earnPointDto);
 
-        // then
-        Optional<Point> result = pointRepository.findById(UUID.fromString((earnPointResultDto.getPointId())));
-        assertThat(result).isPresent();
-        assertThat(result.get().getId().toString()).isEqualTo(earnPointResultDto.getPointId());
-        assertThat(result.get().getMember().getId()).isEqualTo(existMember.getId());
-        assertThat(result.get().getBrand().getId()).isEqualTo(newBrand.getId());
-        assertThat(result.get().getAmount()).isEqualTo(5000l);
-
-        assertThat(earnPointResultDto.getMemberId()).isEqualTo(earnPointDto.getMemberId());
-        assertThat(earnPointResultDto.getBrandId()).isEqualTo(earnPointDto.getBrandId());
-        assertThat(earnPointResultDto.getRequestedAmount()).isEqualTo(earnPointDto.getAmount());
-        assertThat(earnPointResultDto.getRemainedAmount()).isEqualTo(5000l);
+        // assert
+        assertThat(earnPointResultDto.getMemberId()).isEqualTo(expectedMember.getId());
+        assertThat(earnPointResultDto.getBrandId()).isEqualTo(expectedBrand.getId());
+        assertThat(earnPointResultDto.getRequestedAmount()).isEqualTo(5000L);
+        assertThat(earnPointResultDto.getRemainedAmount()).isEqualTo(5000L);
         assertThat(earnPointResultDto.isSuccess()).isTrue();
     }
 
     @Test
-    void earnPoint_적립_1회_성공() {
+    void testEarnPointAlreadyExists() {
 
-        // given
-        Brand newBrand = Brand.createBrand("BURGERQUEEN");
-        brandRepository.save(newBrand);
+        // arrange
+        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
 
-        // 가입된 회원, 적립된 적 있는 브랜드
+        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        expectedBrand = brandRepository.save(expectedBrand);
+
+        Point expectedPoint = Point.createPointWithUuid(expectedMember, expectedBrand, 5000L, LocalDateTime.now());
+        expectedPoint = pointRepository.save(expectedPoint);
+
+        // A registered member
+        // Points already exists.
         EarnPointDto earnPointDto = EarnPointDto.builder()
-                .memberId(existMember.getId().toString())
-                .brandId(existBrand.getId().toString())
-                .amount(5000l)
+                .memberId(expectedMember.getId())
+                .brandId(expectedBrand.getId())
+                .amount(5000L)
                 .build();
 
-        // when
-        EarnPointResultDto earnPointResultDto = pointService.earnPoint(earnPointDto);
+        // act
+        EarnPointResultDto earnPointResultDto = sut.earnPoint(earnPointDto);
 
-        // then
-        Optional<Point> result = pointRepository.findById(UUID.fromString((earnPointResultDto.getPointId())));
-        assertThat(result).isPresent();
-        assertThat(result.get().getId().toString()).isEqualTo(earnPointResultDto.getPointId());
-        assertThat(result.get().getMember().getId()).isEqualTo(existMember.getId());
-        assertThat(result.get().getBrand().getId()).isEqualTo(existBrand.getId());
-        assertThat(result.get().getAmount()).isEqualTo(10000l);
-
-        assertThat(earnPointResultDto.getMemberId()).isEqualTo(earnPointDto.getMemberId());
-        assertThat(earnPointResultDto.getBrandId()).isEqualTo(earnPointDto.getBrandId());
-        assertThat(earnPointResultDto.getRequestedAmount()).isEqualTo(earnPointDto.getAmount());
-        assertThat(earnPointResultDto.getRemainedAmount()).isEqualTo(10000);
+        // assert
+        assertThat(earnPointResultDto.getMemberId()).isEqualTo(expectedMember.getId());
+        assertThat(earnPointResultDto.getBrandId()).isEqualTo(expectedBrand.getId());
+        assertThat(earnPointResultDto.getPointId()).isEqualTo(expectedPoint.getId());
+        assertThat(earnPointResultDto.getRequestedAmount()).isEqualTo(5000L);
+        assertThat(earnPointResultDto.getRemainedAmount()).isEqualTo(10000L);
         assertThat(earnPointResultDto.isSuccess()).isTrue();
     }
 
     @Test
-    void usePoint_사용_1회_성공() {
+    void testUsePointWhenPointsAreSufficient() {
 
-        // given
-        Brand newBrand = Brand.createBrand("BURGERQUEEN");
-        brandRepository.save(newBrand);
+        // arrange
+        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
 
-        // 가입된 회원, 적립된 적 있는 브랜드의 포인트 사용
+        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        expectedBrand = brandRepository.save(expectedBrand);
+
+        Point expectedPoint = Point.createPointWithUuid(expectedMember, expectedBrand, 5000L, LocalDateTime.now());
+        expectedPoint = pointRepository.save(expectedPoint);
+
+        // A registered member
+        // Points are sufficient.
         UsePointDto usePointDto = UsePointDto.builder()
-                .memberId(existMember.getId().toString())
-                .brandId(existBrand.getId().toString())
-                .amount(2000l)
+                .memberId(expectedMember.getId())
+                .brandId(expectedBrand.getId())
+                .amount(2000L)
                 .build();
 
-        // when
-        UsePointResultDto usePointResultDto = pointService.usePoint(usePointDto);
+        // act
+        UsePointResultDto usePointResultDto = sut.usePoint(usePointDto);
 
-        // then
-        Optional<Point> result = pointRepository.findById(UUID.fromString((usePointResultDto.getPointId())));
-        assertThat(result).isPresent();
-        assertThat(result.get().getId().toString()).isEqualTo(usePointResultDto.getPointId());
-        assertThat(result.get().getMember().getId()).isEqualTo(existMember.getId());
-        assertThat(result.get().getBrand().getId()).isEqualTo(existBrand.getId());
-        assertThat(result.get().getAmount()).isEqualTo(3000l);
-
-        assertThat(usePointResultDto.getMemberId()).isEqualTo(usePointDto.getMemberId());
-        assertThat(usePointResultDto.getBrandId()).isEqualTo(usePointDto.getBrandId());
-        assertThat(usePointResultDto.getRequestedAmount()).isEqualTo(usePointDto.getAmount());
-        assertThat(usePointResultDto.getRemainedAmount()).isEqualTo(3000l);
+        // assert
+        assertThat(usePointResultDto.getMemberId()).isEqualTo(expectedMember.getId());
+        assertThat(usePointResultDto.getBrandId()).isEqualTo(expectedBrand.getId());
+        assertThat(usePointResultDto.getRequestedAmount()).isEqualTo(2000L);
+        assertThat(usePointResultDto.getRemainedAmount()).isEqualTo(3000L);
         assertThat(usePointResultDto.isSuccess()).isTrue();
     }
 
     @Test
-    void usePoint_사용_잔액_부족_실패() {
+    void testUserPointWhenPointsAreNotSufficient() {
 
-        // given
-        // 가입된 회원, 적립된 적 있는 브랜드의 적립된 포인트 초과 사용
+        // arrange
+        Member expectedMember = Member.createMemberWithUuidAndBarcode("01012345678", LocalDateTime.now());
+        expectedMember = memberRepository.save(expectedMember);
+
+        Brand expectedBrand = Brand.createBrandWithUuid("MOONBUCKS", LocalDateTime.now());
+        expectedBrand = brandRepository.save(expectedBrand);
+
+        Point expectedPoint = Point.createPointWithUuid(expectedMember, expectedBrand, 5000L, LocalDateTime.now());
+        expectedPoint = pointRepository.save(expectedPoint);
+
+        // A registered member
+        // Points are not sufficient.
         UsePointDto usePointDto = UsePointDto.builder()
-                .memberId(existMember.getId().toString())
-                .brandId(existBrand.getId().toString())
-                .amount(10000l)
+                .memberId(expectedMember.getId())
+                .brandId(expectedBrand.getId())
+                .amount(10000L)
                 .build();
 
-        // when & then
+        // act & assert
         assertThrows(NotEnoughPointException.class, () -> {
-            pointService.usePoint(usePointDto);
+            sut.usePoint(usePointDto);
         });
 
-        // 포인트가 차감되지 않았는지 확인
-        Optional<Point> point = pointRepository.findByMemberIdAndBrandIdWithOptimisticLock(
-                existMember.getId(), existBrand.getId());
-        assertThat(point.get().getAmount()).isEqualTo(5000l);
+        Point point = pointRepository.findByMemberIdAndBrandIdWithOptimisticLock(
+                expectedMember.getId(), expectedBrand.getId()).get();
+        assertThat(point.getAmount()).isEqualTo(5000L);
     }
 }

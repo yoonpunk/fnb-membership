@@ -10,8 +10,8 @@ import lombok.Data;
 @Builder
 public class CheckedStoreDto {
 
-    private String brandId;
+    private Long brandId;
     private String brandName;
-    private String storeId;
+    private Long storeId;
     private String storeName;
 }
