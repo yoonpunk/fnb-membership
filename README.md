@@ -64,7 +64,7 @@ Springboot 기반의 애플리케이션을 직접 구현하며, 개발에 필요
 
 ## 🏗️ 설계 및 구조 <a id="architect" />
 ### ERD <a id="erd" />
-자세한 내용은 [🔗 entity_diagram_2023-03-23.md](documents/diagrams/entity_diagram_2023-03-23.md) 파일을 참고하세요.
+자세한 내용은 [🔗 entity_diagram_2023-04-09.md](documents/diagrams/entity_diagram_2023-04-09.md) 파일을 참고하세요.
 ```mermaid
 erDiagram
     BRAND {
@@ -80,7 +80,7 @@ erDiagram
     }
     POINT_ORDER {
         binary(16) point_order_id PK
-        binary(16) member_id FK
+        binary(16) member_id
         varchar(255) brand_name
         varchar(255) store_name
         varchar(255) type
@@ -105,7 +105,6 @@ erDiagram
     POINT |o--|| BRAND : brand_id
     POINT }o--|| MEMBER : member_id
     STORE }o--|| BRAND : brand_id
-    POINT_ORDER }o--|| MEMBER : member_id
 ```
 
 ### 클래스 다이어그램 <a id="classdiagram" />
