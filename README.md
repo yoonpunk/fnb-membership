@@ -13,7 +13,8 @@ Springboot 기반의 애플리케이션을 직접 구현하며, 개발에 필요
   * [추가 고려사항](#considerations)
 * [설계 및 구조](#architect)
    * [ERD](#erd)
-   * [클래스 다이어그램](#classdiagram)
+   * [Class Diagram](#classdiagram)
+   * [Sequence Diagram](#sequencediagram)
 * [개선 사항](#improvement)
   * [ 🔗 1.PointOrderServiceController의 조회 API에 Pageable을 노출하는 것에 대한 고민](/documents/refactorings/1.PointOrderServiceController의_조회_API에_Pageable을_노출하는_것에_대한_고민.md)
 
@@ -164,6 +165,10 @@ classDiagram
         <<interface>>
     }
 ```
+
+### Sequence Diagram <a id="sequencediagram" />
+구현된 4 개의 API의 Sequence Diagram을 나타냅니다.   
+자세한 내용은 [🔗 sequence_diagram-04-10.md](documents/diagrams/sequence_diagram_2023-04-10.md) 파일을 참고하세요.
 
 ## 🚀 개선 사항 <a id="improvement"/>
 프로젝트를 진행하며 기능을 추가하거나 코드를 개선한 내용을 작성한 문서입니다. 문제 상황에 대해서 고민하고 해결한 내용을 기록합니다.   
